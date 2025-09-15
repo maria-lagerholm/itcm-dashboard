@@ -1,0 +1,31 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: itcm-dashboard
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app          # live code mount (hot reload watches this)
+      - ./data:/app/data:ro # your CSVs
+    environment:
+      ENV: dev
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+    # platform: linux/amd64  # only if you must force x86_64
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    container_name: item-dashboard-web
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: "http://localhost:8000"
+    volumes:
+      - ./web:/app            # live-edit source
+      - /app/node_modules     # keep container's node_modules
+    depends_on:
+      - api
+    restart: unless-stopped
