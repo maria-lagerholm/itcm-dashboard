@@ -35,7 +35,7 @@ export default function Sweden() {
               axisLine={false}
               tickFormatter={(v) => v.toLocaleString()}
             />
-            <Tooltip formatter={(v) => v.toLocaleString()} />
+            <Tooltip formatter={(v) => v.toLocaleString()} cursor={false} />
             <Bar
               dataKey="unique_customers"
               fill={COLORS.primary}

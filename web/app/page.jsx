@@ -55,7 +55,7 @@ export default function Home() {
               axisLine={false}
               tickFormatter={(v) => v.toLocaleString()}
             />
-            <Tooltip formatter={(v) => v.toLocaleString()} />
+            <Tooltip formatter={(v) => v.toLocaleString()} cursor={false} />
             <Bar
               dataKey="count"
               fill={COLORS.primary}
