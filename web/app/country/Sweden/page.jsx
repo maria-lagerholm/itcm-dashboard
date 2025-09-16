@@ -7,27 +7,28 @@ import {
 import { COLORS, CHART } from "../../theme";
 
 export default function Sweden() {
-  const [mode, setMode] = useState("customers"); // "customers" | "revenue"
+  // Only "customers" and "revenue" modes, no avg basket value
+  const [mode, setMode] = useState("customers");
   const [rowsCustomers, setRowsCustomers] = useState([]); // [{ city, unique_customers }]
   const [rowsRevenue, setRowsRevenue] = useState([]);     // [{ city, ksek }]
   const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
-  // Load top cities by unique customers (existing)
+  // customers
   useEffect(() => {
     fetch(`${base}/api/country/205/top-cities?limit=10`)
       .then(r => r.json())
-      .then(j => setRowsCustomers(j.top_cities || []))
+      .then(j => setRowsCustomers(Array.isArray(j.top_cities) ? j.top_cities : []))
       .catch(console.error);
   }, [base]);
 
-  // Lazy-load revenue: hit /api/cities_by_revenue and take Sweden slice
+  // revenue (load once when switching to revenue)
   useEffect(() => {
     if (mode !== "revenue" || rowsRevenue.length) return;
     fetch(`${base}/api/cities_by_revenue`)
       .then(r => r.json())
       .then(j => {
         const map = j?.top_cities_by_revenue_ksek || {};
-        const sweden = map["Sweden"] || [];
+        const sweden = Array.isArray(map?.["Sweden"]) ? map["Sweden"] : [];
         setRowsRevenue(sweden);
       })
       .catch(console.error);
@@ -37,15 +38,22 @@ export default function Sweden() {
     () => (mode === "customers" ? rowsCustomers : rowsRevenue),
     [mode, rowsCustomers, rowsRevenue]
   );
-  const dataKey = mode === "customers" ? "unique_customers" : "ksek";
-  const formatNum = (v) => Number(v).toLocaleString("sv-SE");
+
+  const dataKey =
+    mode === "customers" ? "unique_customers" :
+    "ksek";
+
+  const fmtInt = (v) => Number(v).toLocaleString("sv-SE");
+  const yTickFormatter = fmtInt;
+
+  const titleSuffix =
+    mode === "customers" ? "unique customers" :
+    "revenue (KSEK)";
 
   return (
     <main style={{ padding: 20, maxWidth: 1000, margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
-        <h2>
-          Sweden · Top 10 cities by {mode === "customers" ? "unique customers" : "revenue (KSEK)"}
-        </h2>
+        <h2>Sweden · Top 10 cities by {titleSuffix}</h2>
         <div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={() => setMode("customers")}
@@ -92,19 +100,16 @@ export default function Sweden() {
               tick={{ fontSize: CHART.tickFont }}
               tickLine={false}
               axisLine={false}
-              tickFormatter={formatNum}
+              tickFormatter={yTickFormatter}
             />
             <Tooltip
               formatter={(v) =>
-                mode === "customers" ? formatNum(v) : `${formatNum(v)} KSEK`
+                mode === "customers" ? fmtInt(v) :
+                `${fmtInt(v)} KSEK`
               }
               cursor={false}
             />
-            <Bar
-              dataKey={dataKey}
-              fill={COLORS.primary}
-              radius={CHART.barRadius}
-            />
+            <Bar dataKey={dataKey} fill={COLORS.primary} radius={CHART.barRadius} />
           </BarChart>
         </ResponsiveContainer>
       </div>
