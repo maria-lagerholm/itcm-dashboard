@@ -3,13 +3,13 @@
 import { formatNumberWithSpace } from "./lib/number";
 import ChartToolbar from "./components/ChartToolbar";
 import CountryBarChart from "./components/CountryBarChart";
-import Spinner from "./components/Spinner"; // <-- add
+import Spinner from "./components/Spinner";
 import { useCountryDatasets } from "./hooks/useCountryDatasets";
 
 export default function Home() {
   const {
     mode, setMode, data, dataKey, totalRevenueKSEK,
-    revenueLoading, revenueError, // <-- add
+    revenueLoading, revenueError,
   } = useCountryDatasets();
 
   const showSpinner = mode === "revenue" && revenueLoading;
@@ -31,10 +31,20 @@ export default function Home() {
         <ChartToolbar mode={mode} setMode={setMode} />
       </div>
 
-      {/* Show total only when loaded */}
+      {/* Show totals only when loaded */}
       {mode === "revenue" && !showSpinner && (
         <div style={{ marginBottom: 16, fontWeight: 500 }}>
           Total Revenue: {formatNumberWithSpace(totalRevenueKSEK)} KSEK
+          {/*
+            Calculate total orders by summing up the 'orders' field in the revenue array.
+            If revenue is not available, show nothing.
+          */}
+          {Array.isArray(data) && data.length > 0 && typeof data[0].orders === "number" && (
+            <>
+              {"  "}·{" "}
+              Total Orders: {formatNumberWithSpace(data.reduce((sum, r) => sum + (r.orders || 0), 0))}
+            </>
+          )}
         </div>
       )}
 
