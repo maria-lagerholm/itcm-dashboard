@@ -11,7 +11,6 @@ export default function Nav() {
         ← Back
       </button>
       <Link href="/" style={{ marginRight: 12 }}>Home</Link>
-      <Link href="/country">All countries</Link>
     </nav>
   );
 }

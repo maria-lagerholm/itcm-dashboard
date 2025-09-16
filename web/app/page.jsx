@@ -1,71 +1,49 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-} from "recharts";
-import { COLORS, CHART } from "./theme";
+import { formatNumberWithSpace } from "./lib/number";
+import ChartToolbar from "./components/ChartToolbar";
+import CountryBarChart from "./components/CountryBarChart";
+import { useCountryDatasets } from "./hooks/useCountryDatasets";
 
 export default function Home() {
-  const [data, setData] = useState([]);
-  const router = useRouter();
-
-  useEffect(() => {
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
-    fetch(`${base}/`)
-      .then((r) => r.json())
-      .then((json) => {
-        const map = json?.customers_by_country || {};
-        const rows = Object.entries(map).map(([country, count]) => ({ country, count }));
-        setData(rows);
-      })
-      .catch(console.error);
-  }, []);
-
-  // Custom click handler for bars
-  const handleBarClick = (entry) => {
-    const country = entry?.payload?.country;
-    if (country) router.push(`/country/${encodeURIComponent(country)}`);
-  };
+  const { mode, setMode, data, dataKey, totalRevenueKSEK } = useCountryDatasets();
 
   return (
     <main style={{ padding: 20, maxWidth: 1000, margin: "0 auto" }}>
-      <h2 style={{ marginBottom: 12 }}>Customers by Country</h2>
-      <div style={{ width: "100%", height: 420, border: "1px solid #eee", borderRadius: 8, padding: 12 }}>
-        <ResponsiveContainer>
-          <BarChart
-            data={data}
-            //margin={CHART.margin}
-            //barSize={28}
-            //barCategoryGap={18}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="country"
-              tick={{ fontSize: CHART.tickFont }}
-              tickLine={false}
-              axisLine={false}
-              angle={0}
-              dy={5}
-            />
-            <YAxis
-              tick={{ fontSize: CHART.tickFont }}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(v) => v.toLocaleString()}
-            />
-            <Tooltip formatter={(v) => v.toLocaleString()} cursor={false} />
-            <Bar
-              dataKey="count"
-              fill={COLORS.primary}
-              radius={CHART.barRadius}
-              onClick={handleBarClick}
-              style={{ cursor: "pointer" }}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+      <header style={{ marginBottom: 28 }}>
+        <h1
+          style={{
+            fontSize: 44,
+            fontWeight: 900,
+            letterSpacing: 1,
+            margin: 0,
+            textAlign: "center",
+            color: "#1e293b",
+            textTransform: "uppercase",
+            lineHeight: 1.1,
+            textShadow: "0 2px 12px rgba(30,41,59,0.08)",
+          }}
+        >
+          <span style={{ fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontWeight: 800 }}>
+            Åshild Analytics
+          </span>
+        </h1>
+      </header>
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+        <h2 style={{ fontFamily: "'Inter', 'Segoe UI', 'Roboto', 'Arial', sans-serif", fontWeight: 700 }}>
+          {mode === "customers" ? "Customers by Country" : "Total Revenue by Country"}
+        </h2>
+        <ChartToolbar mode={mode} setMode={setMode} />
       </div>
+
+      {mode === "revenue" && (
+        <div style={{ marginBottom: 16, fontWeight: 500 }}>
+          Total Revenue: {formatNumberWithSpace(totalRevenueKSEK)} KSEK
+        </div>
+      )}
+
+      <CountryBarChart data={data} dataKey={dataKey} />
     </main>
   );
 }
