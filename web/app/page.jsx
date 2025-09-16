@@ -7,11 +7,15 @@ import Spinner from "./components/Spinner";
 import { useCountryDatasets } from "./hooks/useCountryDatasets";
 
 export default function Home() {
+  // Destructure state and handlers from custom hook for country datasets.
+  // If debugging, check that 'mode' is either "customers" or "revenue", and that 'data' is an array.
   const {
     mode, setMode, data, dataKey, totalRevenueKSEK,
     revenueLoading, revenueError,
   } = useCountryDatasets();
 
+  // Spinner should show only when in "revenue" mode and revenue data is still loading.
+  // If debugging, check that 'revenueLoading' is a boolean and 'mode' is correct.
   const showSpinner = mode === "revenue" && revenueLoading;
 
   return (
@@ -31,13 +35,14 @@ export default function Home() {
         <ChartToolbar mode={mode} setMode={setMode} />
       </div>
 
-      {/* Show totals only when loaded */}
+      {/* Show revenue totals only when in "revenue" mode and not loading.
+          If debugging, check that totalRevenueKSEK is a number and data is an array with expected fields. */}
       {mode === "revenue" && !showSpinner && (
         <div style={{ marginBottom: 16, fontWeight: 500 }}>
           Total Revenue: {formatNumberWithSpace(totalRevenueKSEK)} KSEK
-          {/*
-            Calculate total orders by summing up the 'orders' field in the revenue array.
-            If revenue is not available, show nothing.
+          {/* 
+            If 'data' is an array and contains 'orders' field, show total orders.
+            If debugging, check that each item in 'data' has an 'orders' property (number).
           */}
           {Array.isArray(data) && data.length > 0 && typeof data[0].orders === "number" && (
             <>
@@ -48,11 +53,14 @@ export default function Home() {
         </div>
       )}
 
-      {/* Optional error message */}
+      {/* Show error message if revenue fetch failed.
+          If debugging, check value of 'revenueError'. */}
       {mode === "revenue" && revenueError && (
         <div style={{ color: "#b91c1c", marginBottom: 12 }}>{revenueError}</div>
       )}
 
+      {/* Show spinner while loading revenue data, otherwise show the bar chart.
+          If debugging, check that 'data' and 'dataKey' are correct for the chart. */}
       {showSpinner ? (
         <div style={{
           width: "100%", height: 420, border: "1px solid #eee",

@@ -4,20 +4,26 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function CountryOverview() {
+  // State to hold the sorted array of countries and their unique customer counts
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
+    // Determine API base URL (use env var if set, otherwise fallback to localhost for local dev)
     const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
     fetch(`${base}/api/countries`)
       .then((r) => r.json())
       .then((j) => {
-        // j = { customers_by_country: { Sweden: 34570, Norway: 26223, ... } }
+        // Expecting response shape: { customers_by_country: { Sweden: 34570, Norway: 26223, ... } }
+        // Convert customers_by_country object to sorted array of { country, count }
         const arr = Object.entries(j.customers_by_country || {})
           .map(([country, count]) => ({ country, count }))
           .sort((a, b) => b.count - a.count);
         setRows(arr);
       })
-      .catch(console.error);
+      .catch((e) => {
+        // Log fetch or parse errors for debugging
+        console.error("Error fetching countries or parsing response in CountryOverview:", e);
+      });
   }, []);
 
   return (
@@ -33,6 +39,7 @@ export default function CountryOverview() {
           <div style={{ textAlign: "right" }}>Unique customers</div>
         </div>
 
+        {/* Render a row for each country, linking to its detail page */}
         {rows.map((r) => (
           <Link
             key={r.country}
@@ -53,6 +60,7 @@ export default function CountryOverview() {
           </Link>
         ))}
 
+        {/* Show loading message if no data has been loaded yet */}
         {!rows.length && (
           <div style={{ padding: 16, color: "#777" }}>Loading…</div>
         )}
