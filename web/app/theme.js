@@ -1,6 +1,6 @@
 // Theme constants for charts and UI. If debugging, check that these values are imported and used consistently in chart components.
 export const COLORS = {
-  primary: "#009688",   // Main accent color for bars and highlights (MARINE_GREEN)
+  primary: "#62949d",   // Main accent color for bars and highlights (MARINE_GREEN)
   grid: "#e5e7eb",      // Grid line color for charts (light gray)
   text: "#1f2937",      // Default text color (gray-800)
 };
