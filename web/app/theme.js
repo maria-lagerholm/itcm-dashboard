@@ -1,13 +1,38 @@
-// Theme constants for charts and UI. If debugging, check that these values are imported and used consistently in chart components.
+// Theme constants for charts and UI.
+
 export const COLORS = {
-  primary: "#62949d",   // Main accent color for bars and highlights (MARINE_GREEN)
-  grid: "#e5e7eb",      // Grid line color for charts (light gray)
-  text: "#1f2937",      // Default text color (gray-800)
+  // General
+  primary:   "#137d73", // main accent (marine green)
+  secondary: "#2a9d92", // cool gray
+  tertiary:  "#30c4b2", // green
+  grid:      "#e5e7eb",
+  text:      "#1f2937",
+
+  // Segment colors (used for New / Repeat / Loyal)
+  segments: {
+    New:    "#137d73", // align with primary
+    Repeat: "#2a9d92", // align with secondary
+    Loyal:  "#30c4b2", // align with tertiary
+  },
+
+  // Single-series bars (e.g., revenue)
+  series: {
+    revenue: "#62949d",
+  },
 };
 
-// Chart style settings. If debugging chart appearance, verify these values are passed to recharts components.
+// Fixed segment order + labels (export so components don’t hardcode)
+export const SEGMENT_ORDER = ["New", "Repeat", "Loyal"];
+
+export const SEGMENT_LABELS = {
+  New: "New = 1 order",
+  Repeat: "Repeat = 2–3 orders",
+  Loyal: "Loyal = ≥4 orders",
+};
+
+// Chart style settings.
 export const CHART = {
-  barRadius: [8, 8, 0, 0], // Border radius for bar chart bars (top-left, top-right, bottom-right, bottom-left)
-  margin: { top: 8, right: 12, bottom: 32, left: 12 }, // Chart margin (in px)
-  tickFont: 14, // Font size for axis ticks
+  barRadius: [8, 8, 0, 0],
+  margin: { top: 8, right: 12, bottom: 32, left: 12 },
+  tickFont: 14,
 };
