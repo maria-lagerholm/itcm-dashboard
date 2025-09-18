@@ -6,13 +6,6 @@ from deps import get_transactions_df
 
 router = APIRouter(prefix="/api/sales_month", tags=["sales"])
 
-COUNTRY_MAP_ALPHA = {
-    "SE": "Sweden",
-    "DK": "Denmark",
-    "FI": "Finland",
-    "NO": "Norway",
-}
-
 def _to_number(s: pd.Series) -> pd.Series:
     """Lenient number parser: handles NBSP, spaces as thousands sep, comma decimals."""
     return pd.to_numeric(
@@ -63,13 +56,13 @@ def sales_per_month_by_country(
 
     df["month"] = df["created"].dt.to_period("M").astype(str)  # e.g. "2024-09"
 
-    # normalize country to readable name
-    df["country"] = (
-        df["currency_country"]
-          .astype(str).str.strip().str.upper()
-          .map(COUNTRY_MAP_ALPHA)
-          .fillna("Other")
-    )
+    # currency_country is already remapped in the dataset, so just use as is
+    if "country" in df.columns:
+        # Use the already remapped country column if present
+        pass
+    else:
+        # Fallback: use currency_country as country
+        df["country"] = df["currency_country"]
 
     # ---- collapse to order level: total + month + country (mode) ----
     order_level = (
@@ -103,7 +96,7 @@ def sales_per_month_by_country(
     )
 
     # ---- ensure all months exist per country (fill 0) ----
-    countries_set = set(by_cm["country"].unique()) | set(COUNTRY_MAP_ALPHA.values())
+    countries_set = set(by_cm["country"].unique())
     idx = pd.MultiIndex.from_product([sorted(countries_set), months_all], names=["country", "month"])
     by_cm = by_cm.set_index(["country", "month"]).reindex(idx, fill_value=0).reset_index()
 
