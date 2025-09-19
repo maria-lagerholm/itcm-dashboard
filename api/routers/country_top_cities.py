@@ -1,43 +1,43 @@
 # api/routers/country_top_cities.py
-from fastapi import APIRouter, Depends, Path, Query
+from fastapi import APIRouter, Depends, HTTPException
 import pandas as pd
-from deps import get_customers_df
+from deps import get_city_summary_df
 
 router = APIRouter(prefix="/api/country", tags=["country"])
 
+COUNTRY_ID_TO_ALPHA2 = {"58": "DK", "160": "NO", "205": "SE", "72": "FI"}
+ALPHA2_TO_NAME = {"SE": "Sweden", "DK": "Denmark", "NO": "Norway", "FI": "Finland"}
+
 @router.get("/{country_id}/top-cities")
-def top_cities(
-    country_id: str = Path(..., description="invoiceCountryId, e.g. 205 for Sweden"),
-    limit: int = Query(10, ge=1, le=50),
-    df: pd.DataFrame = Depends(get_customers_df),
-):
-    # ---- Filter for rows matching the requested country_id ----
-    # Debug: Check if country_id exists in the data, and if invoiceCity/shopUserId columns are present
-    d = df.loc[df["invoiceCountryId"] == country_id, ["invoiceCity", "shopUserId"]]
-    if d.empty:
-        # Debug: No customers found for this country_id
-        return {"country_id": country_id, "top_cities": []}
+def top_cities(country_id: str, df: pd.DataFrame = Depends(get_city_summary_df)):
+    alpha2 = COUNTRY_ID_TO_ALPHA2.get(country_id)
+    country_name = ALPHA2_TO_NAME.get(alpha2 or "")
+    if not country_name:
+        raise HTTPException(404, f"Unknown country_id '{country_id}'")
 
-    # ---- Normalize city names for grouping (case-insensitive) ----
-    # Debug: Check for empty or null city names before grouping
-    d = d.copy()
-    d["invoiceCity_lower"] = d["invoiceCity"].astype(str).str.lower()
+    if df is None or df.empty:
+        raise HTTPException(500, "city_summary is empty")
 
-    # ---- Group by normalized city name and count unique customers ----
-    # Debug: After grouping, check if any cities have zero customers (should not happen)
-    top = (
-        d.groupby("invoiceCity_lower")["shopUserId"]
-         .nunique()
-         .sort_values(ascending=False)
-         .head(limit)
-         .reset_index()
-         .rename(columns={"invoiceCity_lower": "city", "shopUserId": "unique_customers"})
-    )
+    df = df.copy()
+    for c in ("country", "city", "customers_count"):
+        if c not in df.columns:
+            raise HTTPException(500, f"city_summary missing '{c}' column")
 
-    # ---- Format city names for output (title case for consistency) ----
-    # Debug: Check for cities with unexpected formatting or duplicates after title-casing
-    top["city"] = top["city"].str.title()
+    df["country"] = df["country"].astype(str).str.strip()
+    df["city"] = df["city"].astype(str).str.strip()
+    df["customers_count"] = pd.to_numeric(df["customers_count"], errors="coerce").fillna(0).astype(int)
 
-    # ---- Return result as list of dicts ----
-    # Debug: Check if fewer than 'limit' cities are returned (may indicate low data volume)
-    return {"country_id": country_id, "top_cities": top.to_dict(orient="records")}
+    sub = df[df["country"].str.casefold() == country_name.casefold()]
+    sub = sub[~sub["city"].str.casefold().eq("unknown")]
+    if sub.empty:
+        raise HTTPException(404, f"No data for country_id '{country_id}'")
+
+    top = sub.sort_values("customers_count", ascending=False).head(10)
+
+    return {
+        "country_id": country_id,
+        "top_cities": [
+            {"city": r["city"], "unique_customers": int(r["customers_count"])}
+            for _, r in top.iterrows()
+        ],
+    }

@@ -3,6 +3,8 @@ uvicorn[standard]
 pandas
 pydantic
 python-dateutil
+pyarrow==21.0.0
+fastparquet==2024.11.0
 # Optional (uncomment when needed):
 # httpx
 # orjson
