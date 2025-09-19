@@ -1,43 +1,44 @@
 # api/routers/country_top_cities.py
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 import pandas as pd
-from deps import get_city_summary_df
+from deps import get_city_summary_df  # reads city_summary.parquet
 
 router = APIRouter(prefix="/api/country", tags=["country"])
 
-COUNTRY_ID_TO_ALPHA2 = {"58": "DK", "160": "NO", "205": "SE", "72": "FI"}
-ALPHA2_TO_NAME = {"SE": "Sweden", "DK": "Denmark", "NO": "Norway", "FI": "Finland"}
+ID2NAME = {"58": "Denmark", "160": "Norway", "205": "Sweden", "72": "Finland"}
 
 @router.get("/{country_id}/top-cities")
-def top_cities(country_id: str, df: pd.DataFrame = Depends(get_city_summary_df)):
-    alpha2 = COUNTRY_ID_TO_ALPHA2.get(country_id)
-    country_name = ALPHA2_TO_NAME.get(alpha2 or "")
-    if not country_name:
-        raise HTTPException(404, f"Unknown country_id '{country_id}'")
+def top_cities(
+    country_id: str = Path(..., description="invoiceCountryId, e.g. 205 for Sweden"),
+    limit: int = Query(10, ge=1, le=50),
+    df: pd.DataFrame = Depends(get_city_summary_df),
+):
+    name = ID2NAME.get(country_id)
+    if not name or df is None or df.empty:
+        return {"country_id": country_id, "top_cities": []}
 
-    if df is None or df.empty:
-        raise HTTPException(500, "city_summary is empty")
-
-    df = df.copy()
-    for c in ("country", "city", "customers_count"):
-        if c not in df.columns:
-            raise HTTPException(500, f"city_summary missing '{c}' column")
-
-    df["country"] = df["country"].astype(str).str.strip()
-    df["city"] = df["city"].astype(str).str.strip()
-    df["customers_count"] = pd.to_numeric(df["customers_count"], errors="coerce").fillna(0).astype(int)
-
-    sub = df[df["country"].str.casefold() == country_name.casefold()]
-    sub = sub[~sub["city"].str.casefold().eq("unknown")]
+    # filter country + exclude "Unknown" (case-insensitive)
+    mask = (
+        df["country"].str.strip().str.casefold().eq(name.casefold())
+        & ~df["city"].str.contains(r"\bunknown\b", case=False, na=False)
+    )
+    sub = df.loc[mask, ["city", "customers_count"]]
     if sub.empty:
-        raise HTTPException(404, f"No data for country_id '{country_id}'")
+        return {"country_id": country_id, "top_cities": []}
 
-    top = sub.sort_values("customers_count", ascending=False).head(10)
+    # ensure ints, aggregate once in case of accidental duplicates, then top-k
+    sub = sub.assign(customers_count=sub["customers_count"].astype("int64"))
+    top = (
+        sub.groupby("city", as_index=False)["customers_count"].sum()
+           .nlargest(limit, "customers_count")
+    )
 
+    # format exactly as FE expects; title-case like previous endpoint
+    top["city"] = top["city"].astype(str).str.title()
     return {
         "country_id": country_id,
         "top_cities": [
-            {"city": r["city"], "unique_customers": int(r["customers_count"])}
-            for _, r in top.iterrows()
+            {"city": c, "unique_customers": int(n)}
+            for c, n in zip(top["city"].to_list(), top["customers_count"].to_list())
         ],
     }

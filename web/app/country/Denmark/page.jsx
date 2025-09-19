@@ -88,6 +88,32 @@ const AGE_COLORS = {
   male:   "#6081a4",
 };
 
+// NEW: simple number formatter for tooltips (space as thousands separator, e.g., 1 200)
+const fmtInt = (v) => {
+  const s = new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 }).format(Number(v ?? 0));
+  // Replace non-breaking/thin spaces with regular spaces
+  return s.replace(/\u00A0/g, " ").replace(/\u202F/g, " ");
+};
+
+// NEW: custom tooltip for revenue mode (shows Revenue + AOV if present)
+function CityRevenueTooltip({ active, payload }) {
+  if (!active || !payload?.length) return null;
+  const p = payload[0]?.payload ?? {};
+  return (
+    <div style={{
+      background: "white", border: "1px solid #eee", borderRadius: 8,
+      padding: "8px 10px", fontSize: 13, boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
+    }}>
+      <div style={{ fontWeight: 600, marginBottom: 4 }}>{p.city}</div>
+      <div>Revenue: {fmtInt(p.ksek)} KSEK</div>
+      {p.avg_order_value_sek != null && (
+        <div>Average order value: {fmtInt(p.avg_order_value_sek)} SEK</div>
+      )}
+    </div>
+  );
+}
+
+
 export default function Denmark() {
   // --- Top cities (customers / revenue) ---
   const [mode, setMode] = useState("customers"); // "customers" | "revenue"
@@ -119,6 +145,7 @@ export default function Denmark() {
       .then((r) => r.json())
       .then((j) => {
         const denmark = j?.top_cities_by_revenue_ksek?.["Denmark"];
+        // keep avg_order_value_sek as provided by backend
         setRowsRevenue(Array.isArray(denmark) ? denmark : []);
       })
       .catch((e) => console.error("Error fetching Denmark top cities by revenue:", e));
@@ -137,7 +164,7 @@ export default function Denmark() {
       .finally(() => setAgeLoading(false));
   }, [base]);
 
-  // Monthly sort if .month exists
+  // Monthly sort if .month exists (not used for city lists, but keep it)
   const data = useMemo(() => {
     const d = mode === "customers" ? rowsCustomers : rowsRevenue;
     if (d.length && d[0].month) return sortByMonthJanToDec(d);
@@ -145,11 +172,11 @@ export default function Denmark() {
   }, [mode, rowsCustomers, rowsRevenue]);
 
   const dataKey = mode === "customers" ? "unique_customers" : "ksek";
-  const fmtInt = (v) => Number(v).toLocaleString("en-GB");
-
   const titleSuffix = mode === "customers" ? "unique customers" : "revenue (KSEK)";
-  const tooltipFormatter = (v) =>
-    mode === "customers" ? [fmtInt(v), "Customers"] : [`${fmtInt(v)} KSEK`, "Revenue"];
+
+  // original tooltip for customers mode
+  const customersTooltipFormatter = (v) => [fmtInt(v), "Customers"];
+  // revenue mode uses custom component above
 
   // ---- Monthly charts window ----
   const HIST_START = "2024-06";
@@ -212,7 +239,12 @@ export default function Denmark() {
               axisLine={false}
               tickFormatter={fmtInt}
             />
-            <Tooltip formatter={tooltipFormatter} cursor={false} wrapperStyle={{ fontSize: 14 }} />
+            {mode === "revenue" ? (
+              // NEW: custom tooltip shows Revenue + AOV
+              <Tooltip content={<CityRevenueTooltip />} cursor={false} wrapperStyle={{ fontSize: 14 }} />
+            ) : (
+              <Tooltip formatter={customersTooltipFormatter} cursor={false} wrapperStyle={{ fontSize: 14 }} />
+            )}
             <Bar dataKey={dataKey} fill={COLORS.primary} radius={CHART.barRadius} />
           </BarChart>
         </ResponsiveContainer>
