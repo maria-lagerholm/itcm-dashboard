@@ -5,6 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
 import { COLORS, CHART } from "../../theme";
+import { fmtInt } from "./utils/formatters"; // sv-SE style: 1 000
 
 // Inclusive month range: "YYYY-MM" -> "YYYY-MM"
 function buildMonthRange(startYM, endYM) {
@@ -29,21 +30,31 @@ function monthLabel(ym) {
   return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
-const fmt = (n) => Number(n ?? 0).toLocaleString("en-US");
+// --- custom tooltip styled like MonthlyForecastChart ---
+function MonthlySalesTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+  const curr = payload[0]?.value ?? null;
+  return (
+    <div style={{
+      background: "white",
+      border: "1px solid #eee",
+      borderRadius: 8,
+      padding: "8px 10px",
+      fontSize: 13,
+      boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
+    }}>
+      {curr != null && <div>{fmtInt(curr)} KSEK</div>}
+    </div>
+  );
+}
 
-/**
- * Monthly revenue (KSEK) chart for Denmark and month span.
- * Props:
- *  - country: "Denmark"
- *  - startYM: "YYYY-MM"
- *  - endYM:   "YYYY-MM"
- */
 export default function MonthlySalesChart({
   country = "Denmark",
   startYM = "2024-06",
   endYM = "2025-05",
   title = `${"Denmark"} · Monthly Revenue (KSEK)`,
   subtitle, // optional custom subtitle
+  showTitle = true, // new prop, default true
 }) {
   const monthsWanted = useMemo(() => buildMonthRange(startYM, endYM), [startYM, endYM]);
 
@@ -83,23 +94,20 @@ export default function MonthlySalesChart({
   const sub = subtitle ?? `${monthLabel(startYM)} – ${monthLabel(endYM)}`;
 
   return (
-    <section style={{ marginTop: 28 }}>
+    <section style={{ marginTop: 24 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
-        <h3 style={{ margin: 0 }}>{title}</h3>
+        {/* Title intentionally omitted */}
         <div style={{ color: "#64748b", fontSize: 13 }}>{sub}</div>
       </div>
 
-      {loading ? (
-        <div style={{
-          width: "100%", height: 360, border: "1px solid #eee",
-          borderRadius: 8, display: "grid", placeItems: "center", background: "#fafafa"
-        }}>
-          <div style={{ fontSize: 13, color: "#64748b" }}>Loading monthly sales…</div>
-        </div>
-      ) : error ? (
-        <div style={{ color: "#b91c1c", marginBottom: 12 }}>{error}</div>
-      ) : (
-        <div style={{ width: "100%", height: 360, border: "1px solid #eee", borderRadius: 8, padding: 12 }}>
+      <div style={{ width: "100%", height: 320, border: "1px solid #eee", borderRadius: 8, padding: 12 }}>
+        {loading ? (
+          <div style={{ textAlign: "center", color: "#64748b", fontSize: 14, marginTop: 80 }}>
+            Loading monthly sales…
+          </div>
+        ) : error ? (
+          <div style={{ color: "#b91c1c", marginBottom: 12 }}>{error}</div>
+        ) : (
           <ResponsiveContainer>
             <BarChart data={rows} margin={CHART.margin}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -115,12 +123,12 @@ export default function MonthlySalesChart({
                 tick={{ fontSize: CHART.tickFont }}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={fmt}
+                tickFormatter={fmtInt}
               />
               <Tooltip
-                formatter={(v) => [`${fmt(v)} KSEK`]}
-                labelFormatter={(l) => l}
+                content={<MonthlySalesTooltip />}
                 cursor={false}
+                wrapperStyle={{ fontSize: 13 }}
               />
               <Bar
                 dataKey="ksek"
@@ -129,8 +137,8 @@ export default function MonthlySalesChart({
               />
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   );
 }

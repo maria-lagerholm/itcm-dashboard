@@ -2,23 +2,60 @@
 
 export const COLORS = {
   // General
-  primary:   "#137d73", // main accent (marine green)
-  secondary: "#2a9d92", // cool gray
-  tertiary:  "#30c4b2", // green
-  grid:      "#e5e7eb",
-  text:      "#1f2937",
+  primary:   "#0b8f84",
+  secondary: "#2a9d92",
+  tertiary:  "#30c4b2",
+  quaternary:"#aeeee0",
+  quinary:   "#a3dcef",
+  senary:    "#a2b9ed",
+  septenary: "#a3dcef",
 
-  // Segment colors (used for New / Repeat / Loyal)
+  // Channel colors
+  web: "#4e78a6",
+  telephone: "#9fcbe8",
+  email: "#f0ce63",
+  letter: "#d07395",
+  other: "#ff9d9a",
+
+  grid: "#e5e7eb",
+  text: "#1f2937",
+
+  // Segment colors
   segments: {
-    New:    "#137d73", // align with primary
-    Repeat: "#2a9d92", // align with secondary
-    Loyal:  "#30c4b2", // align with tertiary
+    New:    "#137d73",
+    Repeat: "#2a9d92",
+    Loyal:  "#30c4b2",
   },
 
-  // Single-series bars (e.g., revenue)
+  // Single-series bars
   series: {
     revenue: "#62949d",
   },
+
+  // Age palette (define first)
+  age: {
+    female: "#d07395",
+    male:   "#6081a4",
+  },
+};
+
+// Export a convenient map matching your data keys
+export const AGE_COLORS = {
+  Female: COLORS.age.female,
+  Male:   COLORS.age.male,
+};
+
+
+// fixed logical order if you ever need it in legends etc.
+export const CHANNEL_ORDER = ["web", "telephone", "email", "letter", "other"];
+
+// semantic colors per channel
+export const CHANNEL_COLORS = {
+  web: COLORS.series.web,
+  telephone: COLORS.telephone,
+  email: COLORS.email,
+  letter: COLORS.letter,
+  other: COLORS.other,
 };
 
 // Fixed segment order + labels (export so components don’t hardcode)

@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/theme": ["app/theme"]
     },
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],

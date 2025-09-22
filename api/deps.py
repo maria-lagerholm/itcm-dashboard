@@ -13,6 +13,8 @@ ORDER_ITEMS_PARQUET_PATH     = Path("/app/data/order_items.parquet")
 CUSTOMER_SUMMARY_PARQUET_PATH= Path("/app/data/customer_summary.parquet")
 COUNTRY_SUMMARY_PARQUET_PATH = Path("/app/data/country_summary.parquet")
 CITY_SUMMARY_PARQUET_PATH    = Path("/app/data/city_summary.parquet")
+CITY_MONTHLY_REVENUE_PARQUET_PATH    = Path("/app/data/city_monthly_revenue.parquet")
+COUNTRIES_BY_CHANNEL_PARQUET_PATH    = Path("/app/data/country_customers_by_channel.parquet")
 
 # Global cache for loaded DataFrames (loaded once per process)
 _customers_df = None
@@ -23,6 +25,8 @@ _order_items_df = None
 _customer_summary_df = None
 _country_summary_df = None
 _city_summary_df = None
+_city_monthly_revenue_df = None
+_countries_by_channel_df = None
 
 def get_customers_df() -> pd.DataFrame:
     global _customers_df
@@ -71,3 +75,15 @@ def get_city_summary_df() -> pd.DataFrame:
     if _city_summary_df is None:
         _city_summary_df = pd.read_parquet(CITY_SUMMARY_PARQUET_PATH, engine="pyarrow")
     return _city_summary_df
+
+def get_city_monthly_revenue_df() -> pd.DataFrame:
+    global _city_monthly_revenue_df
+    if _city_monthly_revenue_df is None:
+        _city_monthly_revenue_df = pd.read_parquet(CITY_MONTHLY_REVENUE_PARQUET_PATH, engine="pyarrow")
+    return _city_monthly_revenue_df
+
+def get_countries_by_channel_df() -> pd.DataFrame:
+    global _countries_by_channel_df
+    if _countries_by_channel_df is None:
+        _countries_by_channel_df = pd.read_parquet(COUNTRIES_BY_CHANNEL_PARQUET_PATH, engine="pyarrow")
+    return _countries_by_channel_df
