@@ -1,24 +1,29 @@
 // Theme constants for charts and UI.
 
 export const COLORS = {
-  // General
-  primary:   "#0b8f84",
-  secondary: "#2a9d92",
-  tertiary:  "#30c4b2",
-  quaternary:"#aeeee0",
-  quinary:   "#a3dcef",
-  senary:    "#a2b9ed",
-  septenary: "#a3dcef",
+  // Blues
+  primary:      "#7fb3b8",
+  secondary:    "#FFFFB3",
+  tertiary:     "#BEBADA",
+  quaternary:   "#FB8072",
+  quinary:      "#80B1D3",
+  senary:       "#FDB462",
+  septenary:    "#B3DE69",
+  octonary:     "#FCCDE5",
+  nonary:       "#D9D9D9",
+  denary:       "#BC80BD",
+  undenary:     "#CCEBC5",
+  duodenary:    "#FFED6F",
+
+  grid:         "#E5E7EA",
+  text:         "#1f2937",
 
   // Channel colors
-  web: "#4e78a6",
+  web:       "#4e78a6",
   telephone: "#9fcbe8",
-  email: "#f0ce63",
-  letter: "#d07395",
-  other: "#ff9d9a",
-
-  grid: "#e5e7eb",
-  text: "#1f2937",
+  email:     "#f0ce63",
+  letter:    "#d07395",
+  other:     "#ff9d9a",
 
   // Segment colors
   segments: {
@@ -30,14 +35,21 @@ export const COLORS = {
   // Single-series bars
   series: {
     revenue: "#62949d",
+    web:     "#4e78a6", // used by CHANNEL_COLORS
   },
 
-  // Age palette (define first)
+  // Age palette
   age: {
     female: "#d07395",
     male:   "#6081a4",
   },
 };
+
+// Handy palettes
+export const PALETTE_10 = [
+  COLORS.primary, COLORS.secondary, COLORS.tertiary, COLORS.quaternary, COLORS.quinary,
+  COLORS.senary, COLORS.septenary, COLORS.octonary, COLORS.nonary, COLORS.denary,
+];
 
 // Export a convenient map matching your data keys
 export const AGE_COLORS = {
@@ -45,11 +57,10 @@ export const AGE_COLORS = {
   Male:   COLORS.age.male,
 };
 
-
-// fixed logical order if you ever need it in legends etc.
+// Fixed logical order if you ever need it in legends etc.
 export const CHANNEL_ORDER = ["web", "telephone", "email", "letter", "other"];
 
-// semantic colors per channel
+// Semantic colors per channel
 export const CHANNEL_COLORS = {
   web: COLORS.series.web,
   telephone: COLORS.telephone,
@@ -67,9 +78,31 @@ export const SEGMENT_LABELS = {
   Loyal: "Loyal = ≥4 orders",
 };
 
-// Chart style settings.
+// Chart style settings (general)
 export const CHART = {
   barRadius: [8, 8, 0, 0],
   margin: { top: 8, right: 12, bottom: 32, left: 12 },
   tickFont: 14,
+};
+
+// Text defaults
+export const TEXT = {
+  family: "'Helvetica Neue', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+  color: COLORS.text,
+  size: CHART.tickFont,   // base size
+  minSize: 10,            // min for auto-fit
+  measureCoeff: 0.65,     // label width ≈ chars * coeff * fontSize
+};
+
+// Treemap styling
+export const TREEMAP = {
+  ratio: 3.0,            // favor wider-than-tall tiles
+  tileRadius: 6,
+  tilePadding: 6,
+  tileStroke: COLORS.grid,
+  emptyBg: "#fafafa",
+  containerBorder: COLORS.grid,
+  containerRadius: 8,
+  containerPadding: 12,
+  tooltipShadow: "0 6px 18px rgba(0,0,0,0.06)",
 };

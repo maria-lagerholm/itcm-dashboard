@@ -56,7 +56,7 @@ export default function AgeDistributionSection({ country = "Denmark" }) {
     <section style={{ width: "100%", boxSizing: "border-box", margin: "32px 0" }}>
       {/* Title + toggles outside the chart box (match TopCities) */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12, fontSize: 14 }}>
-        <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: "#000" }}>{country} · Age distribution by gender</h3>
+        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "#000" }}>{country} · Age distribution by gender</h3>
         <div style={{ display: "flex", gap: 8 }}>
           {["Female", "Male", "Both"].map((g) => (
             <button

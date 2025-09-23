@@ -178,8 +178,7 @@ export default function CountryBarChart({ data, dataKey, mode, seriesKeys }: Pro
             tick={{ fontSize: CHART.tickFont }}
             tickLine={false}
             axisLine={false}
-            // angle={-15}
-            // dy={10}
+            interval={0}
           />
           <YAxis
             tick={{ fontSize: CHART.tickFont }}
@@ -204,7 +203,7 @@ export default function CountryBarChart({ data, dataKey, mode, seriesKeys }: Pro
 
           {isStacked ? (
             <>
-              {SEGMENT_ORDER.map((k, idx) => (
+              {SEGMENT_ORDER.map((k) => (
                 <Bar
                   key={k}
                   dataKey={k}
