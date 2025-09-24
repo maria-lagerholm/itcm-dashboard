@@ -4,7 +4,7 @@ import useTopRepurchase from "../hooks/useTopRepurchase";
 import TopRepurchaseTable from "./TopRepurchaseTable";
 import { TEXT, LAYOUT } from "@/app/theme";
 
-export default function TopRepurchaseSection({ country = "Denmark", limit = 10, title = "Denmark ·Products customers buy again (Top pick)" }) {
+export default function TopRepurchaseSection({ country = "Denmark", limit = 10, title = "Denmark · Products customers buy again (Top pick)" }) {
   const { rows, loading, error } = useTopRepurchase(country, limit);
 
   return (

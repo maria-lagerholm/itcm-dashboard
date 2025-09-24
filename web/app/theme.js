@@ -87,7 +87,7 @@ export const CHART = {
 
 // Text defaults
 export const TEXT = {
-  family: "'Helvetica Neue', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+  family: "Helvetica Neue",
   color: COLORS.text,
   size: CHART.tickFont,   // base size
   minSize: 10,            // min for auto-fit
@@ -112,3 +112,9 @@ export const LAYOUT = {
   sectionGap: 12,       // inner gap in sections using grid
 };
 
+export const CARD = {
+  border: `1px solid ${COLORS.grid}`,   // same as TREEMAP.containerBorder
+  radius: TREEMAP.containerRadius,
+  padding: TREEMAP.containerPadding,
+  bg: "#fff",
+};

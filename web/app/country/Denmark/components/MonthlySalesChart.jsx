@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
-import { COLORS, CHART } from "../../theme";
-import { fmtInt } from "./utils/formatters"; // sv-SE style: 1 000
+import { COLORS, CHART } from "app/theme.js";
+import { fmtInt } from "app/country/Denmark/utils/formatters.js"; // sv-SE style: 1 000
 
 // Inclusive month range: "YYYY-MM" -> "YYYY-MM"
 function buildMonthRange(startYM, endYM) {

@@ -2,8 +2,8 @@
 "use client";
 
 import { useState } from "react";
-import MonthlySalesChart from "../MonthlySalesChart";
-import MonthlyForecastChart from "../MonthlyForecastChart";
+import MonthlySalesChart from "app/country/Denmark/components/MonthlySalesChart.jsx";
+import MonthlyForecastChart from "app/country/Denmark/components/MonthlyForecastChart.jsx";
 
 export default function MonthlyRevenueToggle({
   country = "Denmark",

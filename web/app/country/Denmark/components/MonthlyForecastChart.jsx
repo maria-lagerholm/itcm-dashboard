@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ResponsiveContainer, ComposedChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Scatter
 } from "recharts";
-import { COLORS, CHART } from "../../theme";
-import { fmtInt } from "./utils/formatters"; // sv-SE style: 1 000
+import { COLORS, CHART } from "../../../theme";
+import { fmtInt } from "../utils/formatters"; // sv-SE style: 1 000
 
 // --- local helpers (minimal) ---
 function addMonths(ym, n) {
