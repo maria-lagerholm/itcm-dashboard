@@ -106,3 +106,9 @@ export const TREEMAP = {
   containerPadding: 12,
   tooltipShadow: "0 6px 18px rgba(0,0,0,0.06)",
 };
+
+export const LAYOUT = {
+  sectionMarginY: 32,   // vertical spacing between dashboard blocks
+  sectionGap: 12,       // inner gap in sections using grid
+};
+

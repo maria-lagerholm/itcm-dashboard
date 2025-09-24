@@ -80,6 +80,7 @@ export default function TopCitiesChart({ countryId, titlePrefix = "Denmark" }) {
                 cursor={{ fill: "rgba(0,0,0,0.035)", radius: 6 }}
                 wrapperStyle={{ fontSize: 14, borderRadius: 8 }}
                 contentStyle={{ borderRadius: 8 }}
+                itemStyle={{ color: "#000" }}
               />
             )}
             <Bar dataKey={dataKey} fill={COLORS.primary} radius={CHART.barRadius} />

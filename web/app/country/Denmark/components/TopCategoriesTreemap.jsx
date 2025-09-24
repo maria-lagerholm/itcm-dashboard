@@ -36,9 +36,9 @@ function Tile(props) {
   const pad = TREEMAP.tilePadding;
   const label = name || "";
   const inX = x + pad;
-  const availW = Math.max(0, width - pad * 2);
+  const availW = Math.max(0, width - pad * 1);
   const fs = fit(label, availW);
-  const lineH = fs + 2;
+  const lineH = fs + 4;
   const inY = y + pad + fs;
 
   const fitsOne = height >= (lineH + pad * 2);

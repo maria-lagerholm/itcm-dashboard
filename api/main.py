@@ -13,6 +13,8 @@ from routers.countries_by_channel import router as countries_by_channel_router
 from routers.returning import router as returning_router
 from routers.top_brands_by_country import router as top_brands_by_country_router
 from routers.top_categories_by_season import router as top_categories_by_season_router
+from routers.top_products import router as top_products_router
+from routers.top_repurchase_by_country import router as top_repurchase_by_country_router
 
 # ---- FastAPI app initialization ----
 app = FastAPI(title="Item Dashboard")
@@ -39,6 +41,8 @@ app.include_router(countries_by_channel_router)
 app.include_router(returning_router)
 app.include_router(top_brands_by_country_router)
 app.include_router(top_categories_by_season_router)
+app.include_router(top_products_router)
+app.include_router(top_repurchase_by_country_router)
 
 # ---- Health check endpoint ----
 # Use this to verify the API server is running and responsive.

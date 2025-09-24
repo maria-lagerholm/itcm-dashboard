@@ -8,7 +8,7 @@ export default function TopBrandsSection({
   country = "Denmark",
   limit = 10,
   height = 280,
-  title = "Denmark · Top Brands",
+  title = "Denmark · Top brands",
 }) {
   const {
     rows: brandRows = [],
@@ -17,8 +17,8 @@ export default function TopBrandsSection({
   } = useTopBrands(country, limit) ?? {};
 
   return (
-    <section style={{ marginTop: 28 }}>
-      <h3 style={{ fontWeight: 600, marginBottom: 10 }}>{title}</h3>
+    <section>
+      <h3>{title}</h3>
 
       {loading ? (
         <div

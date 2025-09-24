@@ -52,7 +52,7 @@ export default function MonthlySalesChart({
   country = "Denmark",
   startYM = "2024-06",
   endYM = "2025-05",
-  title = `${"Denmark"} · Monthly Revenue (KSEK)`,
+  title = `${"Denmark"} · Monthly revenue (KSEK)`,
   subtitle, // optional custom subtitle
   showTitle = true, // new prop, default true
 }) {

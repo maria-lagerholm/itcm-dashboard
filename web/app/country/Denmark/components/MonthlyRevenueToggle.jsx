@@ -19,7 +19,7 @@ export default function MonthlyRevenueToggle({
     <section style={{ marginTop: 24 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
         <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
-          {country} · Monthly Revenue (KSEK)
+          {country} · Monthly revenue (KSEK)
         </h3>
         <div style={{ display: "flex", gap: 8 }}>
           <button

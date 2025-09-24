@@ -5,6 +5,8 @@ import {
   CartesianGrid, Legend
 } from "recharts";
 
+import styles from "@/app/app/country/Denmark/page.module.css";
+
 // --- helpers ---
 const dkInt = (v) => Number(v).toLocaleString("da-DK");
 
