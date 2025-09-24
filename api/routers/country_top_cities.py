@@ -1,44 +1,40 @@
 # api/routers/country_top_cities.py
-from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from fastapi import APIRouter, Depends, Path, Query
 import pandas as pd
 from deps import get_city_summary_df  # reads city_summary.parquet
 
 router = APIRouter(prefix="/api/country", tags=["country"])
 
-ID2NAME = {"58": "Denmark", "160": "Norway", "205": "Sweden", "72": "Finland"}
-
-@router.get("/{country_id}/top-cities")
+@router.get("/{country}/top-cities")
 def top_cities(
-    country_id: str = Path(..., description="invoiceCountryId, e.g. 205 for Sweden"),
+    country: str = Path(..., description='e.g. "Sweden"'),
     limit: int = Query(10, ge=1, le=50),
     df: pd.DataFrame = Depends(get_city_summary_df),
 ):
-    name = ID2NAME.get(country_id)
-    if not name or df is None or df.empty:
-        return {"country_id": country_id, "top_cities": []}
+    if df is None or df.empty or "country" not in df.columns or "city" not in df.columns:
+        return {"country": country, "top_cities": []}
 
-    # filter country + exclude "Unknown" (case-insensitive)
+    # Unicode-safe, whitespace-tolerant country match + drop "Unknown" cities
+    c_norm = country.strip().casefold()
     mask = (
-        df["country"].str.strip().str.casefold().eq(name.casefold())
-        & ~df["city"].str.contains(r"\bunknown\b", case=False, na=False)
+        df["country"].astype(str).str.strip().str.casefold().eq(c_norm)
+        & ~df["city"].astype(str).str.contains(r"\bunknown\b", case=False, na=False)
     )
-    sub = df.loc[mask, ["city", "customers_count"]]
+
+    cols = [c for c in ["city", "customers_count", "total_revenue_sek", "total_orders", "avg_order_value_sek"] if c in df.columns]
+    sub = df.loc[mask, cols].copy()
     if sub.empty:
-        return {"country_id": country_id, "top_cities": []}
+        return {"country": country, "top_cities": []}
 
-    # ensure ints, aggregate once in case of accidental duplicates, then top-k
-    sub = sub.assign(customers_count=sub["customers_count"].astype("int64"))
-    top = (
-        sub.groupby("city", as_index=False)["customers_count"].sum()
-           .nlargest(limit, "customers_count")
-    )
+    # Ensure numeric for sorting; keep original values otherwise "as is"
+    if "customers_count" in sub.columns:
+        sub["customers_count"] = pd.to_numeric(sub["customers_count"], errors="coerce").fillna(0).astype("int64")
+        sub = sub.sort_values("customers_count", ascending=False).head(limit)
+    else:
+        # fallback: just take first N if count column missing
+        sub = sub.head(limit)
 
-    # format exactly as FE expects; title-case like previous endpoint
-    top["city"] = top["city"].astype(str).str.title()
     return {
-        "country_id": country_id,
-        "top_cities": [
-            {"city": c, "unique_customers": int(n)}
-            for c, n in zip(top["city"].to_list(), top["customers_count"].to_list())
-        ],
+        "country": country,                # name, not an ID/code
+        "top_cities": sub.to_dict(orient="records"),
     }
