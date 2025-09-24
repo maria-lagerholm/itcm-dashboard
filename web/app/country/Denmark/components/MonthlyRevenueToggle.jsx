@@ -1,13 +1,21 @@
 // app/country/Denmark/components/MonthlyRevenueToggle.jsx
 "use client";
 
-import { useState } from "react";
-import MonthlySalesChart from "app/country/Denmark/components/MonthlySalesChart.jsx";
-import MonthlyForecastChart from "app/country/Denmark/components/MonthlyForecastChart.jsx";
+import { useState, useMemo } from "react";
+import COUNTRY from "../country";
+import MonthlySalesChart from "./MonthlySalesChart";
+import MonthlyForecastChart from "./MonthlyForecastChart";
+import { BUTTON, TEXT, HEADINGS, LAYOUT, SECTION } from "../../../theme";
+
+const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const labelFromRange = (startYM, endYM) => {
+  const [sy, sm] = startYM.split("-").map(Number);
+  const [ey, em] = endYM.split("-").map(Number);
+  return `${monthNames[(sm - 1 + 12) % 12]} ${sy} – ${monthNames[(em - 1 + 12) % 12]} ${ey}`;
+};
 
 export default function MonthlyRevenueToggle({
-  country = "Denmark",
-  // target windows 
+  country = COUNTRY,
   histStartYM = "2024-06",
   histEndYM   = "2025-05",
   forecastStartYM = "2025-06",
@@ -15,57 +23,36 @@ export default function MonthlyRevenueToggle({
 }) {
   const [view, setView] = useState("hist"); // "hist" | "forecast"
 
+  const histLabel = useMemo(() => labelFromRange(histStartYM, histEndYM), [histStartYM, histEndYM]);
+  const forecastLabel = useMemo(() => labelFromRange(forecastStartYM, forecastEndYM), [forecastStartYM, forecastEndYM]);
+
+  const btn = (active) => ({
+    ...BUTTON.base,
+    background: active ? BUTTON.activeBg : BUTTON.base.background,
+    fontFamily: TEXT.family,
+    color: TEXT.color,
+  });
+
   return (
-    <section style={{ marginTop: 24 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
+    <section style={SECTION.container(LAYOUT)}>
+      <div style={SECTION.header(TEXT)}>
+        <h3 style={{ ...HEADINGS.h3, fontFamily: TEXT.family, color: TEXT.color }}>
           {country} · Monthly revenue (KSEK)
         </h3>
         <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={() => setView("hist")}
-            style={{
-              padding: "6px 10px",
-              borderRadius: 8,
-              border: "1px solid #ddd",
-              background: view === "hist" ? "#f1f5f9" : "white",
-              cursor: "pointer",
-              fontWeight: 600,
-              fontSize: 14,
-            }}
-          >
-            June 2024 – May 2025
+          <button style={btn(view === "hist")} onClick={() => setView("hist")}>
+            {histLabel}
           </button>
-          <button
-            onClick={() => setView("forecast")}
-            style={{
-              padding: "6px 10px",
-              borderRadius: 8,
-              border: "1px solid #ddd",
-              background: view === "forecast" ? "#f1f5f9" : "white",
-              cursor: "pointer",
-              fontWeight: 600,
-              fontSize: 14,
-            }}
-          >
-            June 2025 – May 2026
+          <button style={btn(view === "forecast")} onClick={() => setView("forecast")}>
+            {forecastLabel}
           </button>
         </div>
       </div>
 
-      {/* Render exactly one chart based on toggle */}
       {view === "hist" ? (
-        <MonthlySalesChart
-          country={country}
-          startYM={histStartYM}
-          endYM={histEndYM}
-        />
+        <MonthlySalesChart country={country} startYM={histStartYM} endYM={histEndYM} />
       ) : (
-        <MonthlyForecastChart
-          country={country}
-          startYM={forecastStartYM}
-          endYM={forecastEndYM}
-        />
+        <MonthlyForecastChart country={country} startYM={forecastStartYM} endYM={forecastEndYM} />
       )}
     </section>
   );

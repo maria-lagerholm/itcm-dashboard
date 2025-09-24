@@ -9,21 +9,20 @@ import TopBrandsSection from "./components/TopBrandsSection";
 import TopCategoriesSection from "./components/TopCategoriesSection";
 import TopProductsSection from "./components/TopProductsSection";
 import TopRepurchaseSection from "./components/TopRepurchaseSection";
+import { COUNTRY_ID } from "./country";
+import { COUNTRY } from "./country";
 
 export default function DenmarkPage() {
-  const COUNTRY_ID = 58;
-  const fontFamily = "'Helvetica Neue'";
-
   return (
-    <main style={{ padding: 20, maxWidth: 1000, margin: "0 auto", fontSize: 14, fontFamily }}>
-      <TopCitiesChart countryId={COUNTRY_ID} titlePrefix="Denmark" />
-      <ChannelBar country="Denmark" />
-      <AgeDistributionSection country="Denmark" />
-      <MonthlyRevenueToggle country="Denmark" />
-      <TopBrandsSection country="Denmark" />
-      <TopCategoriesSection country="Denmark"/>
-      <TopProductsSection country="Denmark" />
-      <TopRepurchaseSection country="Denmark" />
+    <main style={{ padding: 20, maxWidth: 1200, margin: "10px auto", fontSize: 14 }}>
+      <TopCitiesChart countryId={COUNTRY_ID} titlePrefix={COUNTRY} />
+      <ChannelBar/>
+      <AgeDistributionSection />
+      <MonthlyRevenueToggle />
+      <TopBrandsSection />
+      <TopCategoriesSection/>
+      <TopProductsSection />
+      <TopRepurchaseSection />
     </main>
   );
 }

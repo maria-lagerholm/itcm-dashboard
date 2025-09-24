@@ -1,88 +1,119 @@
 // app/country/Denmark/components/AgeDistributionSection.jsx
 "use client";
 
+import COUNTRY from "../country";
 import { useMemo, useState } from "react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
-import { CHART, AGE_COLORS } from "../../../theme";
+import {
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
+} from "recharts";
+import {
+  CARD, TEXT, CHART, TOOLTIP, AGE_COLORS, LAYOUT, BUTTON, UI, HEADINGS, SECTION,
+} from "../../../theme";
 import useAgeDistribution from "../hooks/useAgeDistribution";
 
-function Chart({ country, agesSorted, byCountry, genderMode, loading, height = 340 }) {
-  const both = genderMode === "Both";
-  const barSize = both ? 8 : 6;                 // thicker when Both, thinner otherwise
-  const catGap  = both ? "8%" : "1%";
-  const barGap  = both ? 1 : 1;
+function AgeChart({ country, agesSorted, byCountry, mode, loading, height = 320 }) {
+  const both = mode === "Both";
+  const barSize = both ? 8 : 6;
 
   const data = useMemo(() => {
     const c = byCountry?.[country] || {};
     return agesSorted.map((age) => {
-      const f = c?.Female?.[age] ?? 0, m = c?.Male?.[age] ?? 0;
+      const f = Number(c?.Female?.[age] ?? 0);
+      const m = Number(c?.Male?.[age] ?? 0);
       return { age, Female: f, Male: m, Both: f + m };
     });
   }, [agesSorted, byCountry, country]);
 
+  if (loading) {
+    return (
+      <div
+        style={{
+          width: "100%", height,
+          border: CARD.border, borderRadius: CARD.radius, background: CARD.bg,
+          padding: CARD.padding, boxSizing: "border-box",
+          display: "grid", placeItems: "center",
+          fontFamily: TEXT.family, color: TEXT.color,
+          position: "relative",
+        }}
+      >
+        Loading…
+      </div>
+    );
+  }
+
   return (
-    <div style={{ width: "100%", height }}>
-      {loading ? (
-        <div style={{ textAlign: "center", color: "#000", fontSize: 14, marginTop: 80 }}>Loading age distribution…</div>
-      ) : (
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={CHART.margin} barCategoryGap={catGap} barGap={barGap}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="age" tick={{ fontSize: 14 }} tickLine={false} axisLine={false} />
-            <YAxis tick={{ fontSize: 14 }} tickLine={false} axisLine={false} />
-            <Tooltip
-              cursor={{ fill: "rgba(0,0,0,0.035)", radius: 6 }}
-              wrapperStyle={{ fontSize: 14, zIndex: 10, pointerEvents: "none" }}
-              contentStyle={{ background: "#fff", border: "1px solid #eee", borderRadius: 8, boxShadow: "0 4px 10px rgba(0,0,0,.05)", color: "#000" }}
-              labelStyle={{ color: "#000" }}
-              itemStyle={{ color: "#000" }}
-              formatter={(v, n) => [v, n]}
-              labelFormatter={(l) => `Age ${l}`}
-            />
-            {genderMode !== "Male"  && <Bar dataKey="Female" fill={AGE_COLORS.Female} radius={CHART.barRadius} name="Female" barSize={barSize} />}
-            {genderMode !== "Female" && <Bar dataKey="Male"   fill={AGE_COLORS.Male}   radius={CHART.barRadius} name="Male"   barSize={barSize} />}
-          </BarChart>
-        </ResponsiveContainer>
-      )}
+    <div
+      style={{
+        width: "100%", height,
+        border: CARD.border, borderRadius: CARD.radius, background: CARD.bg,
+        padding: CARD.padding, boxSizing: "border-box",
+        fontFamily: TEXT.family, position: "relative",
+      }}
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={CHART.margin} barCategoryGap={both ? "8%" : "1%"} barGap={1}>
+          <CartesianGrid strokeDasharray={UI.grid.strokeDasharray} />
+          <XAxis dataKey="age" tick={{ fontSize: CHART.tickFont }} tickLine={false} axisLine={false} />
+          <YAxis tick={{ fontSize: CHART.tickFont }} tickLine={false} axisLine={false} />
+          <Tooltip
+            cursor={{ fill: TOOLTIP.cursorFill, radius: TOOLTIP.cursorRadius }}
+            wrapperStyle={{ zIndex: 9999, pointerEvents: "none" }}
+            contentStyle={{
+              background: TOOLTIP.base.background,
+              border: TOOLTIP.base.border,
+              borderRadius: TOOLTIP.base.borderRadius,
+              padding: TOOLTIP.base.padding,
+              boxShadow: TOOLTIP.base.boxShadow,
+              fontSize: TEXT.size,
+              color: TEXT.color,
+            }}
+            labelStyle={{ color: TEXT.color, fontSize: TEXT.size }}
+            itemStyle={{ color: TEXT.color, fontSize: TEXT.size }}
+            formatter={(v, n) => [v, n]}
+            labelFormatter={(l) => `Age ${l}`}
+          />
+          {mode !== "Male"  && <Bar dataKey="Female" fill={AGE_COLORS.Female} radius={CHART.barRadius} barSize={barSize} />}
+          {mode !== "Female" && <Bar dataKey="Male"   fill={AGE_COLORS.Male}   radius={CHART.barRadius} barSize={barSize} />}
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 }
 
-export default function AgeDistributionSection({ country = "Denmark" }) {
+export default function AgeDistributionSection({ country = COUNTRY }) {
   const { agesSorted, byCountry, loading } = useAgeDistribution();
-  const [genderMode, setGenderMode] = useState("Female"); // "Female" | "Male" | "Both"
+  const [mode, setMode] = useState("Female"); // "Female" | "Male" | "Both"
+
+  const btn = (active) => ({
+    ...BUTTON.base,
+    background: active ? BUTTON.activeBg : BUTTON.base.background,
+    fontFamily: TEXT.family,
+    color: TEXT.color,
+  });
 
   return (
-    <section style={{ width: "100%", boxSizing: "border-box", margin: "32px 0" }}>
-      {/* Title + toggles outside the chart box (match TopCities) */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12, fontSize: 14 }}>
-        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, color: "#000" }}>{country} · Age distribution by gender</h3>
+    <section style={SECTION.container(LAYOUT)}>
+      <div style={SECTION.header(TEXT)}>
+        <h3 style={{ ...HEADINGS.h3, fontFamily: TEXT.family, color: TEXT.color }}>
+          {country} · Age distribution by gender
+        </h3>
         <div style={{ display: "flex", gap: 8 }}>
           {["Female", "Male", "Both"].map((g) => (
-            <button
-              key={g}
-              onClick={() => setGenderMode(g)}
-              style={{
-                padding: "6px 10px",
-                borderRadius: 8,
-                border: "1px solid #ddd",
-                background: genderMode === g ? "#f1f5f9" : "#fff",
-                cursor: "pointer",
-                fontWeight: 600,
-                fontSize: 14,
-                color: "#000",
-              }}
-            >
+            <button key={g} onClick={() => setMode(g)} style={btn(mode === g)}>
               {g}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Chart box */}
-      <div style={{ width: "100%", height: 320, border: "1px solid #eee", borderRadius: 10, padding: 12, background: "#fff", fontSize: 14 }}>
-        <Chart country={country} agesSorted={agesSorted} byCountry={byCountry} genderMode={genderMode} loading={loading} />
-      </div>
+      <AgeChart
+        country={country}
+        agesSorted={agesSorted}
+        byCountry={byCountry}
+        mode={mode}
+        loading={loading}
+        height={320}
+      />
     </section>
   );
 }

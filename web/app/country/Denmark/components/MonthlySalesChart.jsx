@@ -1,11 +1,15 @@
+// app/country/Denmark/components/MonthlySalesChart.jsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import COUNTRY from "../country";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
-import { COLORS, CHART } from "app/theme.js";
-import { fmtInt } from "app/country/Denmark/utils/formatters.js"; // sv-SE style: 1 000
+import {
+  COLORS, CARD, TEXT, CHART, TOOLTIP, LAYOUT, SECTION,
+} from "../../../theme"; // adjust path if needed
+import { fmtInt } from "../utils/formatters";
 
 // Inclusive month range: "YYYY-MM" -> "YYYY-MM"
 function buildMonthRange(startYM, endYM) {
@@ -22,39 +26,20 @@ function buildMonthRange(startYM, endYM) {
   return out;
 }
 
-// "YYYY-MM" -> English locale label (e.g., "June 2024")
+// "YYYY-MM" -> "June 2024"
 function monthLabel(ym) {
   const [y, m] = ym.split("-").map(Number);
   const d = new Date(Date.UTC(y, m - 1, 1));
-  // Use English locale
   return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
-// --- custom tooltip styled like MonthlyForecastChart ---
-function MonthlySalesTooltip({ active, payload, label }) {
-  if (!active || !payload?.length) return null;
-  const curr = payload[0]?.value ?? null;
-  return (
-    <div style={{
-      background: "white",
-      border: "1px solid #eee",
-      borderRadius: 8,
-      padding: "8px 10px",
-      fontSize: 13,
-      boxShadow: "0 4px 10px rgba(0,0,0,0.05)"
-    }}>
-      {curr != null && <div>{fmtInt(curr)} KSEK</div>}
-    </div>
-  );
-}
-
 export default function MonthlySalesChart({
-  country = "Denmark",
+  country = COUNTRY,
   startYM = "2024-06",
-  endYM = "2025-05",
-  title = `${"Denmark"} · Monthly revenue (KSEK)`,
-  subtitle, // optional custom subtitle
-  showTitle = true, // new prop, default true
+  endYM   = "2025-05",
+  title = `${country} · Monthly revenue (KSEK)`,
+  subtitle,           // optional
+  showTitle = true,   // default true
 }) {
   const monthsWanted = useMemo(() => buildMonthRange(startYM, endYM), [startYM, endYM]);
 
@@ -63,6 +48,7 @@ export default function MonthlySalesChart({
   const [error, setError] = useState("");
 
   const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+  const sub = subtitle ?? `${monthLabel(startYM)} – ${monthLabel(endYM)}`;
 
   useEffect(() => {
     let cancelled = false;
@@ -74,8 +60,7 @@ export default function MonthlySalesChart({
       .then((json) => {
         if (cancelled) return;
         const map = json?.sales_month_ksek || {};
-        // Use Denmark
-        const arr = Array.isArray(map?.["Denmark"]) ? map["Denmark"] : [];
+        const arr = Array.isArray(map?.[country]) ? map[country] : [];
 
         const byMonth = new Map(arr.map((r) => [r.month, Number(r.ksek) || 0]));
         const series = monthsWanted.map((ym) => ({
@@ -89,24 +74,31 @@ export default function MonthlySalesChart({
       .finally(() => !cancelled && setLoading(false));
 
     return () => { cancelled = true; };
-  }, [base, startYM, endYM, monthsWanted]);
-
-  const sub = subtitle ?? `${monthLabel(startYM)} – ${monthLabel(endYM)}`;
+  }, [base, startYM, endYM, monthsWanted, country]);
 
   return (
-    <section style={{ marginTop: 24 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
-        {/* Title intentionally omitted */}
-        <div style={{ color: "#64748b", fontSize: 13 }}>{sub}</div>
+    <section style={SECTION.container(LAYOUT)}>
+      {/* Header (subtitle only, like your original) */}
+      <div style={SECTION.header(TEXT)}>
+        <div style={{ fontFamily: TEXT.family, color: TEXT.color, opacity: 0.7, fontSize: TEXT.size }}>
+          {sub}
+        </div>
       </div>
 
-      <div style={{ width: "100%", height: 320, border: "1px solid #eee", borderRadius: 8, padding: 12 }}>
+      {/* Card container */}
+      <div
+        style={{
+          width: "100%", height: 320,
+          border: CARD.border, borderRadius: CARD.radius, background: CARD.bg,
+          padding: CARD.padding, boxSizing: "border-box", fontFamily: TEXT.family, position: "relative",
+        }}
+      >
         {loading ? (
-          <div style={{ textAlign: "center", color: "#64748b", fontSize: 14, marginTop: 80 }}>
+          <div style={{ textAlign: "center", color: TEXT.color, opacity: 0.75, fontSize: TEXT.size, marginTop: 80 }}>
             Loading monthly sales…
           </div>
         ) : error ? (
-          <div style={{ color: "#b91c1c", marginBottom: 12 }}>{error}</div>
+          <div style={{ color: "crimson", marginBottom: 12, fontFamily: TEXT.family }}>{error}</div>
         ) : (
           <ResponsiveContainer>
             <BarChart data={rows} margin={CHART.margin}>
@@ -126,9 +118,18 @@ export default function MonthlySalesChart({
                 tickFormatter={fmtInt}
               />
               <Tooltip
-                content={<MonthlySalesTooltip />}
-                cursor={false}
-                wrapperStyle={{ fontSize: 13 }}
+                cursor={{ fill: TOOLTIP.cursorFill, radius: TOOLTIP.cursorRadius }}
+                wrapperStyle={{ zIndex: 9999, pointerEvents: "none" }}
+                contentStyle={{
+                  background: TOOLTIP.base.background,
+                  border: TOOLTIP.base.border,
+                  borderRadius: TOOLTIP.base.borderRadius,
+                  padding: TOOLTIP.base.padding,
+                  boxShadow: TOOLTIP.base.boxShadow,
+                  fontSize: TEXT.size,
+                  color: TEXT.color,
+                }}
+                formatter={(v) => [`${fmtInt(v)} KSEK`, "Revenue"]}
               />
               <Bar
                 dataKey="ksek"

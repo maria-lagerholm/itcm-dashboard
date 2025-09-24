@@ -1,14 +1,15 @@
 // app/country/Denmark/components/TopBrandsSection.jsx
 "use client";
 
+import COUNTRY from "../country";
 import TopBrandsBar from "./TopBrandsBar";
 import { useTopBrands } from "../hooks/useTopBrands";
 
 export default function TopBrandsSection({
-  country = "Denmark",
+  country = COUNTRY,
   limit = 10,
   height = 280,
-  title = "Denmark · Top brands",
+  title = `${COUNTRY} · Top brands`,
 }) {
   const {
     rows: brandRows = [],

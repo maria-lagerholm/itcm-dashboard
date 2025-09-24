@@ -113,8 +113,66 @@ export const LAYOUT = {
 };
 
 export const CARD = {
-  border: `1px solid ${COLORS.grid}`,   // same as TREEMAP.containerBorder
-  radius: TREEMAP.containerRadius,
-  padding: TREEMAP.containerPadding,
+  border: `1px solid ${COLORS.grid}`,
+  radius: 8,
+  padding: 12,
   bg: "#fff",
+};
+
+export const BUTTON = {
+  base: {
+    padding: "6px 10px",
+    borderRadius: 8,
+    border: `1px solid ${COLORS.grid}`,
+    background: "#fff",
+    cursor: "pointer",
+    fontWeight: 600,
+    fontSize: 14,
+  },
+  activeBg: "#f1f5f9",
+};
+
+export const TOOLTIP = {
+  base: {
+    background: "#fff",
+    border: `1px solid ${COLORS.grid}`,
+    borderRadius: 8,
+    padding: "8px 10px",
+    fontSize: 14,
+    boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
+  },
+  cursorFill: "rgba(0,0,0,0.035)",
+  cursorRadius: 6,
+};
+
+export const UI = {
+  text: { primary: "#0b0b0c", sizeSm: 14, sizeMd: 16, weightSemibold: 600 },
+  surface: { bg: "#ffffff", border: "#eaeaea", radius: 10, padding: 12, subtle: "#f1f5f9" },
+  button: { border: "#dddddd", bgActive: "#f1f5f9", radius: 8, padding: "6px 10px" },
+  tooltip: { bg: "#ffffff", border: "#eeeeee", shadow: "0 4px 10px rgba(0,0,0,.05)" },
+  grid: { strokeDasharray: "3 3", cursorFill: "rgba(0,0,0,0.035)" },
+};
+
+// Headings
+export const HEADINGS = {
+  h1: { margin: 0, fontSize: 24, fontWeight: 700 },
+  h2: { margin: 0, fontSize: 18, fontWeight: 600 },
+  h3: { margin: 0, fontSize: 16, fontWeight: 600 },
+};
+
+// Generic section block spacing (vertical rhythm)
+export const SECTION = {
+  container: (LAYOUT) => ({
+    display: "grid",
+    gap: LAYOUT.sectionGap,
+    marginTop: LAYOUT.sectionMarginY,
+  }),
+  header: (TEXT) => ({
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    gap: 8,
+    fontFamily: TEXT.family,
+    color: TEXT.color,
+  }),
 };
