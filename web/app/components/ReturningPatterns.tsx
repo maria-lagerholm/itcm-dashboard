@@ -98,7 +98,6 @@ export default function ReturningPatterns({
             cursor={{ fill: TOOLTIP.cursorFill, radius: TOOLTIP.cursorRadius }}
             wrapperStyle={{ fontSize: TEXT.size, color: TEXT.color, fontFamily: TEXT.family }}
             contentStyle={{ ...TOOLTIP.base }}
-            labelStyle={{ fontWeight: 700, marginBottom: 6 }}
             formatter={(value: number, name: string) => {
               const count = Number(value) || 0;
               const pct = total ? (count / total) * 100 : 0;
