@@ -94,11 +94,11 @@ export default function MonthlySalesChart({
         }}
       >
         {loading ? (
-          <div style={{ textAlign: "center", color: TEXT.color, opacity: 0.75, fontSize: TEXT.size, marginTop: 80 }}>
+          <div style={{ textAlign: "center", color: TEXT.color, opacity: 0.75, fontSize: TEXT.size}}>
             Loading monthly sales…
           </div>
         ) : error ? (
-          <div style={{ color: "crimson", marginBottom: 12, fontFamily: TEXT.family }}>{error}</div>
+          <div style={{ color: "crimson", fontFamily: TEXT.family }}>{error}</div>
         ) : (
           <ResponsiveContainer>
             <BarChart data={rows} margin={CHART.margin}>
@@ -133,7 +133,7 @@ export default function MonthlySalesChart({
               />
               <Bar
                 dataKey="ksek"
-                fill={COLORS.series?.revenue || COLORS.primary}
+                fill={COLORS.series.revenue}
                 radius={CHART.barRadius}
               />
             </BarChart>

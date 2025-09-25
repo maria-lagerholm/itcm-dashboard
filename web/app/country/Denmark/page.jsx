@@ -9,19 +9,34 @@ import TopBrandsSection from "./components/TopBrandsSection";
 import TopCategoriesSection from "./components/TopCategoriesSection";
 import TopProductsSection from "./components/TopProductsSection";
 import TopRepurchaseSection from "./components/TopRepurchaseSection";
+
+// If your file exports default: `export default "Denmark"`
+//   use:  import COUNTRY from "./country";
+// If it exports named: `export const COUNTRY = "Denmark"`
+//   use:
 import { COUNTRY } from "./country";
+
+import { FLOW } from "@/app/theme";
 
 export default function DenmarkPage() {
   return (
-    <main style={{ padding: 20, maxWidth: 1200, margin: "10px auto", fontSize: 14 }}>
+    <main
+      style={{
+        ...FLOW.page,                 // gives consistent vertical spacing between sections
+        padding: 20,
+        maxWidth: 1200,
+        margin: "10px auto",
+        fontSize: 14,
+      }}
+    >
       <TopCitiesChart country={COUNTRY} titlePrefix={COUNTRY} />
-      <ChannelBar/>
+      <ChannelBar />
       <AgeDistributionSection />
       <MonthlyRevenueToggle />
-      <TopBrandsSection />
-      <TopCategoriesSection/>
       <TopProductsSection />
+      <TopBrandsSection />
       <TopRepurchaseSection />
+      <TopCategoriesSection />
     </main>
   );
 }
