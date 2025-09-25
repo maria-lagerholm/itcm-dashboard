@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { COUNTRY } from "../country";
 
-export default function useChannelShare(country = "Denmark") {
+export default function useChannelShare(country = COUNTRY) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setErr] = useState(null);

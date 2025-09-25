@@ -8,7 +8,7 @@ import { fmtInt } from "../utils/formatters";
 
 export default function ChannelBar({
   country = COUNTRY,
-  title = `${country} · Customers by channel`,
+  title = `${country} · Orders by channel`,
   height = 110,
 }) {
   const { rows, data, total, loading, error } = useChannelShare(country);
@@ -17,7 +17,7 @@ export default function ChannelBar({
     <section style={{ display: "grid", gap: LAYOUT.sectionGap, margin: 0, position: "relative", isolation: "isolate" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, fontFamily: TEXT.family, color: TEXT.color }}>
         <h3>{title}</h3>
-        {total > 0 && <div style={{ fontSize: TEXT.size }}>Total: {fmtInt(total)}</div>}
+        {total > 0 && <div style={{ fontSize: TEXT.size }}>Total orders: {fmtInt(total)}</div>}
       </div>
 
       {loading ? (
