@@ -1,7 +1,7 @@
 # api/routers/country_top_cities.py
 from fastapi import APIRouter, Depends, Path, Query
 import pandas as pd
-from deps import get_city_summary_df  # reads city_summary.parquet
+from deps import get_city_summary_df
 
 router = APIRouter(prefix="/api/country", tags=["country"])
 
@@ -11,10 +11,14 @@ def top_cities(
     limit: int = Query(10, ge=1, le=50),
     df: pd.DataFrame = Depends(get_city_summary_df),
 ):
-    if df is None or df.empty or "country" not in df.columns or "city" not in df.columns:
+    if (
+        df is None
+        or df.empty
+        or "country" not in df.columns
+        or "city" not in df.columns
+    ):
         return {"country": country, "top_cities": []}
 
-    # Unicode-safe, whitespace-tolerant country match + drop "Unknown" cities
     c_norm = country.strip().casefold()
     mask = (
         df["country"].astype(str).str.strip().str.casefold().eq(c_norm)
@@ -26,15 +30,13 @@ def top_cities(
     if sub.empty:
         return {"country": country, "top_cities": []}
 
-    # Ensure numeric for sorting; keep original values otherwise "as is"
     if "customers_count" in sub.columns:
         sub["customers_count"] = pd.to_numeric(sub["customers_count"], errors="coerce").fillna(0).astype("int64")
         sub = sub.sort_values("customers_count", ascending=False).head(limit)
     else:
-        # fallback: just take first N if count column missing
         sub = sub.head(limit)
 
     return {
-        "country": country,                # name, not an ID/code
+        "country": country,
         "top_cities": sub.to_dict(orient="records"),
     }

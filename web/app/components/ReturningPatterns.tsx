@@ -1,4 +1,3 @@
-// app/components/ReturningPatterns.tsx
 "use client";
 
 import {
@@ -11,20 +10,20 @@ import { COLORS, CHART, CARD, TEXT, UI, TOOLTIP } from "@/app/theme";
 
 type Props = {
   data: Array<Record<string, unknown>>;
-  categoryKey?: string;   // default "country"
-  valueKey?: string;      // default "count"
+  categoryKey?: string;   // default: "country"
+  valueKey?: string;      // default: "count"
   height?: number;
   legend?: boolean;
   compact?: boolean;
 };
 
-
+// Format axis ticks for large numbers
 const numberTick = (n: number | string) => {
   const v = Number(n ?? 0);
   return v >= 10_000 ? `${Math.round(v / 1000)}k` : formatNumberWithSpace(v);
 };
 
-// Convert vertical radius to horizontal (right side rounded only)
+// Only round right side of bar
 const horizRadius = (r: number | number[]): [number, number, number, number] => {
   const rad = Array.isArray(r)
     ? Math.max(...(r as number[]).map(x => x || 0), 8)
@@ -41,7 +40,6 @@ export default function ReturningPatterns({
   compact = false,
 }: Props) {
   const rows = Array.isArray(data) ? data : [];
-
   const total = useMemo(
     () => rows.reduce((s, r) => s + Number(r?.[valueKey] ?? 0), 0),
     [rows, valueKey]
@@ -67,8 +65,8 @@ export default function ReturningPatterns({
           layout="vertical"
           data={rows}
           margin={CHART.margin}
-          barSize={14}             // thinner bars
-          barCategoryGap={12}      // a bit more air between bars
+          barSize={14}
+          barCategoryGap={12}
         >
           <CartesianGrid
             strokeDasharray={UI.grid.strokeDasharray}
@@ -104,17 +102,21 @@ export default function ReturningPatterns({
               return [`${formatNumberWithSpace(count)} (${pct.toFixed(1)}%)`, name];
             }}
           />
-
           {legend && (
             <Legend
-              wrapperStyle={{ paddingTop: 8, color: TEXT.color, fontFamily: TEXT.family, fontSize: TEXT.size }}
+              wrapperStyle={{
+                paddingTop: 8,
+                color: TEXT.color,
+                fontFamily: TEXT.family,
+                fontSize: TEXT.size,
+              }}
             />
           )}
           <Bar
             dataKey={valueKey}
             name="Customers"
             fill={COLORS.series.returning}
-            radius={horizRadius(CHART.barRadius)}  // rounded RIGHT side only
+            radius={horizRadius(CHART.barRadius)}
             stroke="none"
           />
         </BarChart>

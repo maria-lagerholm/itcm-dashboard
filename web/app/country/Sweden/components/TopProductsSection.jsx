@@ -1,4 +1,3 @@
-// app/country/Denmark/components/TopProductsSection.jsx
 "use client";
 
 import COUNTRY from "../country";
@@ -6,6 +5,9 @@ import useTopProducts from "../hooks/useTopProducts";
 import TopProductsTable from "./TopProductsTable";
 import { TEXT, LAYOUT, SECTION, HEADINGS, UI, BUTTON } from "@/app/theme";
 
+/**
+ * TopProductsSection displays a table of top products with year and season selectors.
+ */
 export default function TopProductsSection({
   country = COUNTRY,
   limit = 10,
@@ -18,43 +20,34 @@ export default function TopProductsSection({
   } = useTopProducts(country, limit);
 
   return (
-    <section
-      style={{
-        ...SECTION.container(LAYOUT),
-        position: "relative",
-        isolation: "isolate",
-      }}
-    >
+    <section style={{ ...SECTION.container(LAYOUT), position: "relative", isolation: "isolate" }}>
       <div style={SECTION.header(TEXT)}>
         <h3 style={HEADINGS.h3}>{title}</h3>
-
         <div style={{ display: "flex", gap: LAYOUT.sectionGap }}>
           <select
             aria-label="Year"
             value={year ?? ""}
-            onChange={(e) => setYear(Number(e.target.value))}
+            onChange={e => setYear(Number(e.target.value))}
             style={selectStyle}
             disabled={loading}
           >
-            {years.map((y) => (
+            {years.map(y => (
               <option key={y} value={y}>{y}</option>
             ))}
           </select>
-
           <select
             aria-label="Season"
             value={season ?? ""}
-            onChange={(e) => setSeason(e.target.value)}
+            onChange={e => setSeason(e.target.value)}
             style={selectStyle}
             disabled={loading}
           >
-            {seasonsForSelectedYear.map((s) => (
+            {seasonsForSelectedYear.map(s => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
         </div>
       </div>
-
       {loading ? (
         <div style={{ fontFamily: TEXT.family, color: UI.text.primary }}>Loading…</div>
       ) : error ? (
@@ -68,7 +61,7 @@ export default function TopProductsSection({
   );
 }
 
-/* Theme-based select */
+// Theme-based select style
 const selectStyle = {
   ...BUTTON.base,
   padding: UI.button.padding,

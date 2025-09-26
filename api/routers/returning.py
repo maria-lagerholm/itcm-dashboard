@@ -9,14 +9,15 @@ router = APIRouter(prefix="/api/returning", tags=["returning"])
 _cache = {"sig": None, "data": None}
 
 _ORDER = [
-    "week 1","week 2","week 3",
-    "1 month","2 months","3 months","4 months","5 months","6 months",
-    "7 months","8 months","9 months","10 months","11 months","12 months",
+    "week 1", "week 2", "week 3",
+    "1 month", "2 months", "3 months", "4 months", "5 months", "6 months",
+    "7 months", "8 months", "9 months", "10 months", "11 months", "12 months",
     "> 1 year",
 ]
 
 def _sig(p: Path):
-    st = p.stat(); return (st.st_mtime_ns, st.st_size)
+    st = p.stat()
+    return (st.st_mtime_ns, st.st_size)
 
 def _load_df() -> pd.DataFrame:
     p = Path(RETURN_BUCKETS_PARQUET_PATH)
@@ -26,23 +27,14 @@ def _load_df() -> pd.DataFrame:
             df = get_return_buckets_df()
         except Exception:
             df = pd.read_parquet(p)
-
-        # minimal, fast checks (fail fast instead of normalizing)
-        expected_cols = {"bucket", "customers"}
-        if set(df.columns) != expected_cols:
-            raise HTTPException(500, f"Unexpected columns: {sorted(df.columns)}")
-
+        if set(df.columns) != {"bucket", "customers"}:
+            raise HTTPException(500, "Invalid columns")
         if not is_integer_dtype(df["customers"]):
             raise HTTPException(500, "customers must be integer dtype")
-
-        unknown = set(df["bucket"].unique()) - set(_ORDER)
-        if unknown:
-            raise HTTPException(500, f"Unknown bucket labels: {sorted(unknown)}")
-
-        # stable sort only
+        if set(df["bucket"].unique()) - set(_ORDER):
+            raise HTTPException(500, "Unknown bucket labels")
         cat = pd.Categorical(df["bucket"], categories=_ORDER, ordered=True)
         df = df.assign(bucket=cat).sort_values("bucket").reset_index(drop=True)
-
         _cache["sig"] = sig
         _cache["data"] = df
     return _cache["data"].copy()

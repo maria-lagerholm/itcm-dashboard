@@ -1,4 +1,3 @@
-// app/country/Denmark/page.jsx
 "use client";
 
 import TopCitiesChart from "./components/TopCitiesChart";
@@ -9,20 +8,15 @@ import TopBrandsSection from "./components/TopBrandsSection";
 import TopCategoriesSection from "./components/TopCategoriesSection";
 import TopProductsSection from "./components/TopProductsSection";
 import TopRepurchaseSection from "./components/TopRepurchaseSection";
-
-// If your file exports default: `export default "Denmark"`
-//   use:  import COUNTRY from "./country";
-// If it exports named: `export const COUNTRY = "Denmark"`
-//   use:
 import { COUNTRY } from "./country";
-
 import { FLOW } from "@/app/theme";
 
+// Main page for Denmark country dashboard
 export default function DenmarkPage() {
   return (
     <main
       style={{
-        ...FLOW.page,                 // gives consistent vertical spacing between sections
+        ...FLOW.page,
         padding: 20,
         maxWidth: 1200,
         margin: "10px auto",

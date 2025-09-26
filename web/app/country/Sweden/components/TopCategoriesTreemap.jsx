@@ -1,4 +1,3 @@
-// app/country/Denmark/components/TopCategoriesTreemap.jsx
 "use client";
 
 import { useId, useMemo } from "react";
@@ -9,11 +8,16 @@ import {
   COLORS, TEXT, TREEMAP, CARD, TOOLTIP, UI,
 } from "@/app/theme";
 
+// Estimate text width for label fitting
 const approxW = (t, fs) => (t?.length || 0) * (TEXT.measureCoeff * fs);
+// Fit label font size to available width
 const fit = (label, avail, pref = TEXT.size, min = TEXT.minSize) => {
-  let s = pref; while (s > min && approxW(label, s) > avail) s--; return s;
+  let s = pref;
+  while (s > min && approxW(label, s) > avail) s--;
+  return s;
 };
 
+// Tooltip for treemap tiles
 function Tip({ active, payload = [] }) {
   if (!active || !payload.length) return null;
   const p = payload[0]?.payload || {};
@@ -34,23 +38,20 @@ function Tip({ active, payload = [] }) {
   );
 }
 
-// Always-horizontal labels; clip to tile; shrink then truncate.
-function Tile(props) {
-  const { x, y, width, height, name, size, fill, clipPrefix } = props;
+// Treemap tile with clipped, fitted label and value
+function Tile({ x, y, width, height, name, size, fill, clipPrefix }) {
   const pad = TREEMAP.tilePadding;
   const label = name || "";
   const inX = x + pad;
-  const availW = Math.max(0, width - pad * 1);
+  const availW = Math.max(0, width - pad);
   const fs = fit(label, availW);
   const lineH = fs + 4;
   const inY = y + pad + fs;
-
   const fitsOne = height >= (lineH + pad * 2);
   const trunc = approxW(label, fs) > availW;
   const maxChars = Math.max(0, Math.floor(availW / (TEXT.measureCoeff * fs)));
   const text = trunc && maxChars > 1 ? label.slice(0, maxChars - 1) + "…" : label;
   const canNum = fitsOne && height >= (lineH * 2 + pad * 2);
-
   const clipId = `${clipPrefix}-${Math.round(x)}-${Math.round(y)}-${Math.round(width)}-${Math.round(height)}`;
 
   return (
@@ -60,14 +61,12 @@ function Tile(props) {
           <rect x={x} y={y} width={width} height={height} rx={TREEMAP.tileRadius} ry={TREEMAP.tileRadius} />
         </clipPath>
       </defs>
-
       <rect
         x={x} y={y} width={width} height={height}
         fill={fill || COLORS.primary}
         stroke={TREEMAP.tileStroke}
         rx={TREEMAP.tileRadius} ry={TREEMAP.tileRadius}
       />
-
       <g clipPath={`url(#${clipId})`}>
         {fitsOne && (
           <text
@@ -98,12 +97,19 @@ function Tile(props) {
   );
 }
 
-/** rows: [{ category, count, rank }] */
+/**
+ * Treemap of top categories.
+ * @param {Object[]} rows - Array of { category, count, rank }
+ * @param {number} height - Chart height in px
+ * @param {boolean} compact - Use compact padding
+ * @param {number} padding - Container padding
+ * @param {string} border - Container border style
+ * @param {string} background - Container background
+ */
 export default function TopCategoriesTreemap({
   rows = [],
   height = 300,
-  // Theming/spacing knobs (local overrides without touching theme.js)
-  compact = false,                 // tighter padding/card look
+  compact = false,
   padding = TREEMAP.containerPadding,
   border = CARD.border,
   background = CARD.bg,
@@ -123,12 +129,16 @@ export default function TopCategoriesTreemap({
     return (
       <div
         style={{
-          width: "100%", height,
+          width: "100%",
+          height,
           border,
           borderRadius: TREEMAP.containerRadius,
-          display: "grid", placeItems: "center",
+          display: "grid",
+          placeItems: "center",
           background: TREEMAP.emptyBg,
-          color: TEXT.color, fontSize: TEXT.size, fontFamily: TEXT.family,
+          color: TEXT.color,
+          fontSize: TEXT.size,
+          fontFamily: TEXT.family,
         }}
       >
         No data
@@ -139,12 +149,15 @@ export default function TopCategoriesTreemap({
   return (
     <div
       style={{
-        width: "100%", height,
+        width: "100%",
+        height,
         border,
         borderRadius: TREEMAP.containerRadius,
         padding: compact ? Math.max(6, padding - 6) : padding,
         boxSizing: "border-box",
-        color: TEXT.color, fontSize: TEXT.size, fontFamily: TEXT.family,
+        color: TEXT.color,
+        fontSize: TEXT.size,
+        fontFamily: TEXT.family,
         background,
       }}
     >
@@ -156,7 +169,7 @@ export default function TopCategoriesTreemap({
           content={<Tile clipPrefix={clipPrefix} />}
           isAnimationActive={false}
           fill={COLORS.primary}
-          ratio={TREEMAP.ratio}   // wider-than-tall tiles
+          ratio={TREEMAP.ratio}
         >
           <Tooltip
             content={<Tip />}

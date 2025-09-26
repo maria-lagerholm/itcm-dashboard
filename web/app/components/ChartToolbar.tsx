@@ -3,22 +3,26 @@
 
 import { BUTTON, TEXT } from "../theme";
 
-type Props = {
-  mode: "customers" | "revenue";
-  setMode: (m: "customers" | "revenue") => void;
-};
+type Mode = "customers" | "revenue";
 
+interface Props {
+  mode: Mode;
+  setMode: (m: Mode) => void;
+}
+
+// Chart mode toggle toolbar
 export default function ChartToolbar({ mode, setMode }: Props) {
   const btnStyle = (active: boolean) => ({
     ...BUTTON.base,
     background: active ? BUTTON.activeBg : BUTTON.base.background,
-    fontFamily: (TEXT as any).family,
-    fontSize: (TEXT as any).size,
+    fontFamily: TEXT.family,
+    fontSize: TEXT.size,
   });
 
   return (
     <div style={{ display: "flex", gap: 8 }}>
       <button
+        type="button"
         onClick={() => setMode("customers")}
         style={btnStyle(mode === "customers")}
         aria-pressed={mode === "customers"}
@@ -26,6 +30,7 @@ export default function ChartToolbar({ mode, setMode }: Props) {
         Customers
       </button>
       <button
+        type="button"
         onClick={() => setMode("revenue")}
         style={btnStyle(mode === "revenue")}
         aria-pressed={mode === "revenue"}

@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 import pandas as pd
 import numpy as np
-from deps import get_customer_summary_df  # new dependency
+from deps import get_customer_summary_df
 
 router = APIRouter(prefix="/api/countries", tags=["countries"])
 
@@ -17,7 +17,6 @@ def _clean_country_series(s: pd.Series) -> pd.Series:
     return s.fillna("Other")
 
 def _segment_from_orders(n):
-    # New: 1, Repeat: 2-3, Loyal: >=4
     try:
         n = float(n)
     except Exception:
@@ -44,23 +43,11 @@ def _segment_from_status(s):
 
 @router.get("")
 def customers_by_country(df: pd.DataFrame = Depends(get_customer_summary_df)):
-    # required columns
     ccol = _country_col(df)
-    if not ccol:
-        raise HTTPException(
-            status_code=500,
-            detail='customer_summary missing required column: "country" (or "Country")',
-        )
-    if "customer_id" not in df.columns:
-        raise HTTPException(
-            status_code=500,
-            detail="customer_summary missing required column: customer_id",
-        )
-
+    if not ccol or "customer_id" not in df.columns:
+        raise HTTPException(500, "Missing required columns")
     cust = df[[ccol, "customer_id"]].copy()
     cust[ccol] = _clean_country_series(cust[ccol])
-
-    # unique customers per country (match previous behavior)
     s = (
         cust.dropna(subset=["customer_id"])
             .drop_duplicates(subset=["customer_id"])
@@ -72,24 +59,9 @@ def customers_by_country(df: pd.DataFrame = Depends(get_customer_summary_df)):
 
 @router.get("/segments")
 def customer_segments_by_country(df: pd.DataFrame = Depends(get_customer_summary_df)):
-    # required columns
     ccol = _country_col(df)
-    if not ccol:
-        raise HTTPException(
-            status_code=500,
-            detail='customer_summary missing required column: "country" (or "Country")',
-        )
-    for col in ("customer_id", "total_orders"):
-        if col not in df.columns:
-            # We can still compute segments from status if present; enforce at least one is available.
-            if col == "total_orders" and "status" in df.columns:
-                continue
-            raise HTTPException(
-                status_code=500,
-                detail=f"customer_summary missing required column: {col}",
-            )
-
-    # base cleaning — one row per customer
+    if not ccol or "customer_id" not in df.columns or ("total_orders" not in df.columns and "status" not in df.columns):
+        raise HTTPException(500, "Missing required columns")
     cols = [c for c in (ccol, "customer_id", "total_orders", "status") if c in df.columns]
     base = (
         df[cols]
@@ -98,30 +70,15 @@ def customer_segments_by_country(df: pd.DataFrame = Depends(get_customer_summary
         .copy()
     )
     base[ccol] = _clean_country_series(base[ccol])
-
-    # ensure numeric orders if present
     if "total_orders" in base.columns:
         base["total_orders"] = pd.to_numeric(base["total_orders"], errors="coerce")
     else:
         base["total_orders"] = np.nan
-
-    # derive segment: prefer total_orders; fallback to status
     seg_from_orders = base["total_orders"].map(_segment_from_orders)
-    if "status" in base.columns:
-        seg_from_status = base["status"].map(_segment_from_status)
-    else:
-        seg_from_status = pd.Series(np.nan, index=base.index)
-
+    seg_from_status = base["status"].map(_segment_from_status) if "status" in base.columns else pd.Series(np.nan, index=base.index)
     base["segment"] = seg_from_orders.where(seg_from_orders.notna(), seg_from_status)
-
-    # keep only customers with ≥1 order (to match previous join-on-orders>0 behavior)
-    has_order = base["total_orders"].fillna(0) > 0
-    base = base[has_order].copy()
-
-    # if some segments are still NaN (e.g., unknown status), classify conservatively via orders
+    base = base[base["total_orders"].fillna(0) > 0].copy()
     base["segment"] = base["segment"].where(base["segment"].notna(), base["total_orders"].map(_segment_from_orders))
-
-    # counts per country × segment
     labels = ["New", "Repeat", "Loyal"]
     tbl = (
         base.groupby([ccol, "segment"])
@@ -129,18 +86,12 @@ def customer_segments_by_country(df: pd.DataFrame = Depends(get_customer_summary
             .rename("count")
             .reset_index()
     )
-
-    # ensure all segments exist per country
     countries = tbl[ccol].unique()
     idx = pd.MultiIndex.from_product([countries, labels], names=[ccol, "segment"])
     tbl = tbl.set_index([ccol, "segment"]).reindex(idx, fill_value=0).reset_index()
-
-    # totals and percents
     totals = tbl.groupby(ccol)["count"].sum().rename("total")
     tbl = tbl.merge(totals, on=ccol, how="left")
     tbl["percent"] = (tbl["count"] / tbl["total"]).where(tbl["total"] > 0, 0) * 100
-
-    # build payload identical to previous shape
     payload = {}
     for country_name, g in tbl.groupby(ccol, sort=False):
         g = g.set_index("segment").reindex(labels).reset_index()
@@ -151,5 +102,4 @@ def customer_segments_by_country(df: pd.DataFrame = Depends(get_customer_summary
                 for seg, cnt, pct in zip(g["segment"], g["count"], g["percent"])
             },
         }
-
     return {"segments_by_country": payload}

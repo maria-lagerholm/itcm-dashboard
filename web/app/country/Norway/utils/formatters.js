@@ -1,25 +1,26 @@
-// utils/formatters.js
-export const fmtInt = (v) => {
-  const s = new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 })
-    .format(Number(v ?? 0));
-  return s.replace(/\u00A0/g, " ").replace(/\u202F/g, " ");
-};
+// Integer formatting (sv-SE, no decimals, replaces non-breaking spaces)
+export const fmtInt = v =>
+  new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 })
+    .format(Number(v ?? 0))
+    .replace(/\u00A0|\u202F/g, " ");
 
-// For arrays of { month: "YYYY-MM", ... }
+// Sorts array of { month: "YYYY-MM", ... } by month (Jan-Dec, then year)
 export function sortByMonthJanToDec(arr) {
   if (!Array.isArray(arr) || !arr.length || !arr[0].month) return arr;
   return [...arr].sort((a, b) => {
     const [ya, ma] = a.month.split("-").map(Number);
     const [yb, mb] = b.month.split("-").map(Number);
-    return ma === mb ? ya - yb : ma - mb;
+    return ma !== mb ? ma - mb : ya - yb;
   });
 }
 
-export const prevYearYM = (ym /* "YYYY-MM" */) => {
+// Returns previous year for "YYYY-MM"
+export const prevYearYM = ym => {
   const [y, m] = ym.split("-").map(Number);
   return `${y - 1}-${String(m).padStart(2, "0")}`;
 };
 
+// Adds delta months to "YYYY-MM"
 export const addMonths = (ym, delta) => {
   const [y, m] = ym.split("-").map(Number);
   const d = new Date(Date.UTC(y, m - 1 + delta, 1));

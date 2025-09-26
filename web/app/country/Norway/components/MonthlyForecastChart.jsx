@@ -1,4 +1,3 @@
-// app/country/Denmark/components/MonthlyForecastChart.jsx
 "use client";
 
 import COUNTRY from "../country";
@@ -11,71 +10,60 @@ import {
 } from "../../../theme";
 import { fmtInt } from "../utils/formatters";
 
-// ---- helpers ----
+// Utility: Add n months to a YYYY-MM string
 function addMonths(ym, n) {
   const [y, m] = ym.split("-").map(Number);
   const d = new Date(Date.UTC(y, m - 1, 1));
   d.setUTCMonth(d.getUTCMonth() + n);
-  const yy = d.getUTCFullYear();
-  const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
-  return `${yy}-${mm}`;
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
-const prevYearYM = (ym) => addMonths(ym, -12);
+const prevYearYM = ym => addMonths(ym, -12);
 
+// Format YYYY-MM as "Month YYYY"
 function monthLabel(ym) {
   const [y, m] = ym.split("-").map(Number);
-  const d = new Date(Date.UTC(y, m - 1, 1));
-  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
-// tiny horizontal marker = previous year's value
+// Render a horizontal marker for previous year's value
 function PrevYearTick({ cx, cy }) {
   if (cx == null || cy == null) return null;
-  return (
-    <line
-      x1={cx - 12} y1={cy} x2={cx + 12} y2={cy}
-      stroke={TEXT.color} strokeWidth={2}
-    />
-  );
+  return <line x1={cx - 12} y1={cy} x2={cx + 12} y2={cy} stroke={TEXT.color} strokeWidth={2} />;
 }
 
-// themed tooltip (no month label)
+// Tooltip for current and previous year values
 function CurrentYearTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   const byKey = Object.fromEntries(payload.map(p => [p.dataKey, p]));
-  const curr = byKey.ksek?.value ?? null;
-  const prev = byKey.prev_ksek?.value ?? null;
-
+  const curr = byKey.ksek?.value;
+  const prev = byKey.prev_ksek?.value;
   return (
-    <div
-      style={{
-        background: TOOLTIP.base.background,
-        border:     TOOLTIP.base.border,
-        borderRadius: TOOLTIP.base.borderRadius,
-        padding:    TOOLTIP.base.padding,
-        boxShadow:  TOOLTIP.base.boxShadow,
-        fontSize:   TEXT.size,
-        color:      TEXT.color,
-        fontFamily: TEXT.family,
-      }}
-    >
+    <div style={{
+      background: TOOLTIP.base.background,
+      border: TOOLTIP.base.border,
+      borderRadius: TOOLTIP.base.borderRadius,
+      padding: TOOLTIP.base.padding,
+      boxShadow: TOOLTIP.base.boxShadow,
+      fontSize: TEXT.size,
+      color: TEXT.color,
+      fontFamily: TEXT.family,
+    }}>
       {curr != null && <div>Current year: {fmtInt(curr)} KSEK</div>}
       {prev != null && <div>Prev year: {fmtInt(prev)} KSEK</div>}
     </div>
   );
 }
 
+// MonthlyForecastChart: Shows current and previous year monthly revenue
 export default function MonthlyForecastChart({
   country = COUNTRY,
   anchorEndYM = "2025-05",
   months = 12,
 }) {
   const startYM = useMemo(() => addMonths(anchorEndYM, 1), [anchorEndYM]);
-  const endYM   = useMemo(() => addMonths(startYM, months - 1), [startYM, months]);
-
-  const [rows, setRows] = useState([]); // [{ month, ksek, prev_ksek }]
+  const endYM = useMemo(() => addMonths(startYM, months - 1), [startYM, months]);
+  const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
   useEffect(() => {
@@ -90,32 +78,24 @@ export default function MonthlyForecastChart({
       fetch(prevUrl).then(r => r.json()).catch(() => null),
     ]).then(([currJson, prevJson]) => {
       if (cancelled) return;
-
-      const currArr = Array.isArray(currJson?.sales_month_ksek?.[country])
-        ? currJson.sales_month_ksek[country] : [];
-      const prevArr = Array.isArray(prevJson?.sales_month_ksek?.[country])
-        ? prevJson.sales_month_ksek[country] : [];
-
+      const currArr = Array.isArray(currJson?.sales_month_ksek?.[country]) ? currJson.sales_month_ksek[country] : [];
+      const prevArr = Array.isArray(prevJson?.sales_month_ksek?.[country]) ? prevJson.sales_month_ksek[country] : [];
       const byMonthCurr = new Map(currArr.map(r => [r.month, Number(r.ksek) || 0]));
       const byMonthPrev = new Map(prevArr.map(r => [r.month, Number(r.ksek) || 0]));
-
-      const out = Array.from({ length: months }, (_, i) => {
+      setRows(Array.from({ length: months }, (_, i) => {
         const ym = addMonths(startYM, i);
         return {
           month: ym,
           ksek: byMonthCurr.get(ym) ?? 0,
           prev_ksek: byMonthPrev.get(prevYearYM(ym)) ?? null,
         };
-      });
-
-      setRows(out);
+      }));
       setLoading(false);
     }).catch(() => {
       if (cancelled) return;
-      const out = Array.from({ length: months }, (_, i) => ({
+      setRows(Array.from({ length: months }, (_, i) => ({
         month: addMonths(startYM, i), ksek: 0, prev_ksek: null,
-      }));
-      setRows(out);
+      })));
       setLoading(false);
     });
 
@@ -124,19 +104,27 @@ export default function MonthlyForecastChart({
 
   return (
     <section style={SECTION.container(LAYOUT)}>
-      {/* Subtitle/header */}
       <div style={SECTION.header(TEXT)}>
-        <div style={{ fontFamily: TEXT.family, color: TEXT.color, opacity: 0.7, fontSize: TEXT.size }}>
+        <div style={{
+          fontFamily: TEXT.family,
+          color: TEXT.color,
+          opacity: 0.7,
+          fontSize: TEXT.size
+        }}>
           {monthLabel(startYM)} – {monthLabel(endYM)} (Current year)
         </div>
       </div>
-
-      {/* Card */}
       <div
         style={{
-          width: "100%", height: 320,
-          border: CARD.border, borderRadius: CARD.radius, background: CARD.bg,
-          padding: CARD.padding, boxSizing: "border-box", fontFamily: TEXT.family, position: "relative",
+          width: "100%",
+          height: 320,
+          border: CARD.border,
+          borderRadius: CARD.radius,
+          background: CARD.bg,
+          padding: CARD.padding,
+          boxSizing: "border-box",
+          fontFamily: TEXT.family,
+          position: "relative",
         }}
       >
         {loading ? (
@@ -168,22 +156,20 @@ export default function MonthlyForecastChart({
                 wrapperStyle={{ zIndex: 9999, pointerEvents: "none" }}
                 contentStyle={{
                   background: TOOLTIP.base.background,
-                  border:     TOOLTIP.base.border,
+                  border: TOOLTIP.base.border,
                   borderRadius: TOOLTIP.base.borderRadius,
-                  padding:    TOOLTIP.base.padding,
-                  boxShadow:  TOOLTIP.base.boxShadow,
-                  fontSize:   TEXT.size,
-                  color:      TEXT.color,
+                  padding: TOOLTIP.base.padding,
+                  boxShadow: TOOLTIP.base.boxShadow,
+                  fontSize: TEXT.size,
+                  color: TEXT.color,
                 }}
               />
-              {/* bars: current year */}
               <Bar
                 dataKey="ksek"
                 fill={COLORS.series.revenue}
                 radius={CHART.barRadius}
                 name="ksek"
               />
-              {/* overlay: previous-year marker */}
               <Scatter dataKey="prev_ksek" shape={<PrevYearTick />} name="prev_ksek" />
             </ComposedChart>
           </ResponsiveContainer>

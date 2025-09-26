@@ -1,15 +1,17 @@
-// app/country/Denmark/components/TopRepurchaseSection.jsx
 "use client";
 
 import COUNTRY from "../country";
 import useTopRepurchase from "../hooks/useTopRepurchase";
 import TopRepurchaseTable from "./TopRepurchaseTable";
-import { TEXT, LAYOUT, SECTION, HEADINGS, UI, COLORS } from "@/app/theme";
+import { TEXT, LAYOUT, SECTION, UI, COLORS } from "@/app/theme";
 
+/**
+ * Displays a table of top repurchased products.
+ */
 export default function TopRepurchaseSection({
   country = COUNTRY,
   limit = 10,
-  title = COUNTRY + " · Products customers buy again (Top pick)",
+  title = `${COUNTRY} · Products customers buy again (Top pick)`,
 }) {
   const { rows, loading, error } = useTopRepurchase(country, limit);
 
@@ -25,7 +27,6 @@ export default function TopRepurchaseSection({
       <div style={SECTION.header(TEXT)}>
         <h3>{title}</h3>
       </div>
-
       {loading ? (
         <div style={{ fontFamily: TEXT.family, color: UI.text.primary }}>Loading…</div>
       ) : error ? (

@@ -1,13 +1,13 @@
-// app/country/Denmark/components/TopCategoriesSection.jsx
 "use client";
 
 import COUNTRY from "../country";
 import TopCategoriesTreemap from "./TopCategoriesTreemap";
 import { useTopCategories } from "../hooks/useTopCategories";
-import {
-  TEXT, TREEMAP, LAYOUT, UI, CARD, HEADINGS, SECTION, BUTTON,
-} from "@/app/theme";
+import { TEXT, TREEMAP, LAYOUT, UI, CARD, SECTION, BUTTON } from "@/app/theme";
 
+/**
+ * Displays a treemap of top categories with year and season controls.
+ */
 export default function TopCategoriesSection({
   country = COUNTRY,
   limit = 12,
@@ -33,43 +33,39 @@ export default function TopCategoriesSection({
         isolation: "isolate",
       }}
     >
-      {/* Header + controls */}
       <div style={SECTION.header(TEXT)}>
         <h3>{title}</h3>
-
         <div style={{ marginLeft: "auto", display: "flex", gap: LAYOUT.sectionGap }}>
-          {/* Year */}
+          {/* Accessible year selector */}
           <label style={visuallyHidden} htmlFor="topcat-year">Year</label>
           <select
             id="topcat-year"
             aria-label="Year"
             disabled={loading}
             value={year ?? ""}
-            onChange={(e) => setYear(Number(e.target.value))}
+            onChange={e => setYear(Number(e.target.value))}
             style={selectStyle}
           >
-            {years.map((y) => (
+            {years.map(y => (
               <option key={y} value={y}>{y}</option>
             ))}
           </select>
-
-          {/* Season */}
+          {/* Accessible season selector */}
           <label style={visuallyHidden} htmlFor="topcat-season">Season</label>
           <select
             id="topcat-season"
             aria-label="Season"
             disabled={loading}
             value={season ?? ""}
-            onChange={(e) => setSeason(e.target.value)}
+            onChange={e => setSeason(e.target.value)}
             style={selectStyle}
           >
-            {seasonsForSelectedYear.map((s) => (
+            {seasonsForSelectedYear.map(s => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
         </div>
       </div>
-
       {loading ? (
         <div style={loadingBox(height)}>Loading…</div>
       ) : error ? (
@@ -83,11 +79,10 @@ export default function TopCategoriesSection({
   );
 }
 
-/* ——— styles via theme ——— */
-
+// Dropdown style
 const selectStyle = {
   ...BUTTON.base,
-  padding: UI.button.padding,               // from theme
+  padding: UI.button.padding,
   border: `1px solid ${UI.button.border}`,
   borderRadius: UI.button.radius,
   background: "#fff",
@@ -96,7 +91,8 @@ const selectStyle = {
   color: TEXT.color,
 };
 
-const loadingBox = (h) => ({
+// Loading box style
+const loadingBox = h => ({
   width: "100%",
   height: h,
   border: CARD.border ?? `1px solid ${TREEMAP.containerBorder}`,
@@ -109,7 +105,7 @@ const loadingBox = (h) => ({
   fontFamily: TEXT.family,
 });
 
-/* Accessibility helper for hidden labels (keeps them for screen readers) */
+// Visually hidden style for accessibility
 const visuallyHidden = {
   position: "absolute",
   width: 1,

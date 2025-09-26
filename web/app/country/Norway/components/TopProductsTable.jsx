@@ -1,8 +1,12 @@
 "use client";
 
 import { fmtInt } from "../utils/formatters";
-import { COLORS, TEXT, TREEMAP, TABLE } from "@/app/theme";
+import { COLORS, TEXT, TREEMAP } from "@/app/theme";
 
+/**
+ * Renders a table of top products.
+ * @param {Array} rows - Array of product data objects.
+ */
 export default function TopProductsTable({ rows = [] }) {
   return (
     <div
@@ -26,19 +30,20 @@ export default function TopProductsTable({ rows = [] }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => {
-            const id = r.product_id ?? r.value;
-            return (
-              <tr key={`${id}-${r.rank}`}>
-                <td style={td}>{r.rank}</td>
-                <td style={td}>{r.product}</td>
-                <td style={td}>{r.brand ?? "—"}</td>
-                <td style={td}>{id}</td>
-                <td style={tdRight}>{fmtInt(r.count)}</td>
-              </tr>
-            );
-          })}
-          {rows.length === 0 && (
+          {rows.length > 0 ? (
+            rows.map(r => {
+              const id = r.product_id ?? r.value;
+              return (
+                <tr key={`${id}-${r.rank}`}>
+                  <td style={td}>{r.rank}</td>
+                  <td style={td}>{r.product}</td>
+                  <td style={td}>{r.brand ?? "—"}</td>
+                  <td style={td}>{id}</td>
+                  <td style={tdRight}>{fmtInt(r.count)}</td>
+                </tr>
+              );
+            })
+          ) : (
             <tr>
               <td colSpan={5} style={{ ...td, textAlign: "center", color: COLORS.text }}>
                 No data
@@ -51,6 +56,7 @@ export default function TopProductsTable({ rows = [] }) {
   );
 }
 
+// Table cell styles
 const cellBase = { padding: "12px 14px", borderBottom: `1px solid ${TREEMAP.containerBorder}` };
 const th = { ...cellBase, textAlign: "left", fontWeight: 600 };
 const thRight = { ...th, textAlign: "right" };

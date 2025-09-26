@@ -3,10 +3,21 @@
 import { useEffect, useMemo, useState } from "react";
 import { COUNTRY } from "../country";
 
+// Season order for sorting
 const SEASON_ORDER = ["Winter", "Spring", "Summer", "Autumn"];
-const parseYear = (sl) => (String(sl || "").match(/(\d{4})$/)?.[1] ? Number(RegExp.$1) : null);
-const parseSeason = (sl) => String(sl || "").replace(/\s+\d{4}$/, "");
 
+// Extract year from season label
+const parseYear = sl => {
+  const m = String(sl || "").match(/(\d{4})$/);
+  return m ? Number(m[1]) : null;
+};
+// Extract season from season label
+const parseSeason = sl => String(sl || "").replace(/\s+\d{4}$/, "");
+
+/**
+ * Fetches top products by season for a country.
+ * Returns: { rows, loading, error, years, seasonsForSelectedYear, year, setYear, season, setSeason }
+ */
 export default function useTopProducts(country = COUNTRY, limit = 10) {
   const [loadingMeta, setLoadingMeta] = useState(true);
   const [metaError, setMetaError] = useState(null);
@@ -19,56 +30,65 @@ export default function useTopProducts(country = COUNTRY, limit = 10) {
   const [loadingRows, setLoadingRows] = useState(true);
   const [rowsError, setRowsError] = useState(null);
 
-  // 1) seasons
+  // Fetch available seasons per year
   useEffect(() => {
-    let abort = false;
+    let cancelled = false;
     (async () => {
       setLoadingMeta(true);
       setMetaError(null);
       try {
         const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
-        const res = await fetch(`${base}/api/top_products_by_season/?country=${encodeURIComponent(country)}`, { cache: "no-store" });
+        const res = await fetch(
+          `${base}/api/top_products_by_season/?country=${encodeURIComponent(country)}`,
+          { cache: "no-store" }
+        );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const { data } = await res.json();
-        if (abort) return;
+        if (cancelled) return;
 
-        const labels = (data || []).map((r) => r.season_label).filter(Boolean);
         const byYear = {};
-        for (const sl of labels) {
-          const y = parseYear(sl), s = parseSeason(sl);
-          if (!y || !s) continue;
-          (byYear[y] ||= new Set()).add(s);
-        }
-        const yearsSorted = Object.keys(byYear).map(Number).sort((a,b)=>b-a);
+        (data || []).forEach(r => {
+          const y = parseYear(r.season_label);
+          const s = parseSeason(r.season_label);
+          if (y && s) {
+            byYear[y] = byYear[y] || new Set();
+            byYear[y].add(s);
+          }
+        });
+
+        const yearsSorted = Object.keys(byYear).map(Number).sort((a, b) => b - a);
         const normalized = Object.fromEntries(
-          yearsSorted.map((y) => [y, Array.from(byYear[y]).sort((a,b)=>SEASON_ORDER.indexOf(a)-SEASON_ORDER.indexOf(b))])
+          yearsSorted.map(y => [
+            y,
+            Array.from(byYear[y]).sort((a, b) => SEASON_ORDER.indexOf(a) - SEASON_ORDER.indexOf(b)),
+          ])
         );
 
         setAvailableByYear(normalized);
         setYears(yearsSorted);
-        const y0 = yearsSorted[0] ?? null;
-        setYear(y0);
-        setSeason(y0 ? normalized[y0]?.[0] ?? null : null);
+        const defaultYear = yearsSorted[0] ?? null;
+        setYear(defaultYear);
+        setSeason(defaultYear ? normalized[defaultYear]?.[0] ?? null : null);
       } catch (e) {
-        if (!abort) setMetaError(e.message || "Failed to load seasons");
+        if (!cancelled) setMetaError(e.message || "Failed to load seasons");
       } finally {
-        if (!abort) setLoadingMeta(false);
+        if (!cancelled) setLoadingMeta(false);
       }
     })();
-    return () => { abort = true; };
+    return () => { cancelled = true; };
   }, [country]);
 
-  // 2) fix season when year changes
+  // Ensure valid season when year changes
   useEffect(() => {
     if (!year || !availableByYear[year]) return;
     const list = availableByYear[year] || [];
     if (!season || !list.includes(season)) setSeason(list[0] ?? null);
-  }, [year, availableByYear]); // no season dep to avoid loop
+  }, [year, availableByYear]);
 
-  // 3) rows
+  // Fetch top products for selected season
   useEffect(() => {
     if (!year || !season) return;
-    let abort = false;
+    let cancelled = false;
     (async () => {
       setLoadingRows(true);
       setRowsError(null);
@@ -79,28 +99,43 @@ export default function useTopProducts(country = COUNTRY, limit = 10) {
           `${base}/api/top_products_by_season/?country=${encodeURIComponent(country)}&season_label=${encodeURIComponent(sl)}&limit=${limit}`,
           { cache: "no-store" }
         );
-        if (abort) return;
+        if (cancelled) return;
         if (res.status === 404) { setRows([]); setLoadingRows(false); return; }
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const { data } = await res.json();
-        const list = (data || []).map((r) => ({
-          product: r.product ?? r.name,
-          product_id: r.product_id ?? r.value,
-          brand: r.brand ?? null,
-          count: Number(r.count) || 0,
-          rank: Number(r.rank) || 0,
-        }));
-        setRows(list);
+        setRows(
+          (data || []).map(r => ({
+            product: r.product ?? r.name,
+            product_id: r.product_id ?? r.value,
+            brand: r.brand ?? null,
+            count: Number(r.count) || 0,
+            rank: Number(r.rank) || 0,
+          }))
+        );
       } catch (e) {
-        if (!abort) setRowsError(e.message || "Failed to load products");
+        if (!cancelled) setRowsError(e.message || "Failed to load products");
       } finally {
-        if (!abort) setLoadingRows(false);
+        if (!cancelled) setLoadingRows(false);
       }
     })();
-    return () => { abort = true; };
+    return () => { cancelled = true; };
   }, [country, year, season, limit]);
 
-  const seasonsForSelectedYear = useMemo(() => (year && availableByYear[year] ? availableByYear[year] : []), [availableByYear, year]);
+  // Memoized list of seasons for the selected year
+  const seasonsForSelectedYear = useMemo(
+    () => (year && availableByYear[year] ? availableByYear[year] : []),
+    [availableByYear, year]
+  );
 
-  return { rows, loading: loadingMeta || loadingRows, error: metaError || rowsError, years, seasonsForSelectedYear, year, setYear, season, setSeason };
+  return {
+    rows,
+    loading: loadingMeta || loadingRows,
+    error: metaError || rowsError,
+    years,
+    seasonsForSelectedYear,
+    year,
+    setYear,
+    season,
+    setSeason,
+  };
 }

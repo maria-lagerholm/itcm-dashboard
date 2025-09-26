@@ -3,6 +3,10 @@
 import { fmtInt } from "../utils/formatters";
 import { COLORS, TEXT, TREEMAP } from "@/app/theme";
 
+/**
+ * Table displaying top repurchased products.
+ * @param {Array} rows - Array of product data objects.
+ */
 export default function TopRepurchaseTable({ rows = [] }) {
   return (
     <div
@@ -17,7 +21,7 @@ export default function TopRepurchaseTable({ rows = [] }) {
       }}
     >
       <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0 }}>
-        <thead style={{ background: "#fff" }}>
+        <thead>
           <tr>
             <th style={th}>#</th>
             <th style={th}>Product</th>
@@ -27,19 +31,20 @@ export default function TopRepurchaseTable({ rows = [] }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => {
-            const id = r.product_id ?? r.value;
-            return (
-              <tr key={`${id}-${r.rank}`}>
-                <td style={td}>{r.rank}</td>
-                <td style={td}>{r.product}</td>
-                <td style={td}>{r.brand ?? "—"}</td>
-                <td style={td}>{id}</td>
-                <td style={tdRight}>{fmtInt(r.repurchasers)}</td>
-              </tr>
-            );
-          })}
-          {rows.length === 0 && (
+          {rows.length > 0 ? (
+            rows.map(r => {
+              const id = r.product_id ?? r.value;
+              return (
+                <tr key={`${id}-${r.rank}`}>
+                  <td style={td}>{r.rank}</td>
+                  <td style={td}>{r.product}</td>
+                  <td style={td}>{r.brand ?? "—"}</td>
+                  <td style={td}>{id}</td>
+                  <td style={tdRight}>{fmtInt(r.repurchasers)}</td>
+                </tr>
+              );
+            })
+          ) : (
             <tr>
               <td colSpan={5} style={{ ...td, textAlign: "center", color: COLORS.text }}>
                 No data
@@ -52,6 +57,7 @@ export default function TopRepurchaseTable({ rows = [] }) {
   );
 }
 
+// Table cell styles
 const cellBase = { padding: "12px 14px", borderBottom: `1px solid ${TREEMAP.containerBorder}` };
 const th = { ...cellBase, textAlign: "left", fontWeight: 600 };
 const thRight = { ...th, textAlign: "right" };

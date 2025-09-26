@@ -1,4 +1,3 @@
-// app/country/Denmark/components/AgeDistributionSection.jsx
 "use client";
 
 import COUNTRY from "../country";
@@ -11,10 +10,14 @@ import {
 } from "../../../theme";
 import useAgeDistribution from "../hooks/useAgeDistribution";
 
+/**
+ * Renders a bar chart for age distribution by gender.
+ */
 function AgeChart({ country, agesSorted, byCountry, mode, loading, height = 320 }) {
   const both = mode === "Both";
   const barSize = both ? 8 : 6;
 
+  // Prepare chart data for the selected country and mode
   const data = useMemo(() => {
     const c = byCountry?.[country] || {};
     return agesSorted.map((age) => {
@@ -28,11 +31,17 @@ function AgeChart({ country, agesSorted, byCountry, mode, loading, height = 320 
     return (
       <div
         style={{
-          width: "100%", height,
-          border: CARD.border, borderRadius: CARD.radius, background: CARD.bg,
-          padding: CARD.padding, boxSizing: "border-box",
-          display: "grid", placeItems: "center",
-          fontFamily: TEXT.family, color: TEXT.color,
+          width: "100%",
+          height,
+          border: CARD.border,
+          borderRadius: CARD.radius,
+          background: CARD.bg,
+          padding: CARD.padding,
+          boxSizing: "border-box",
+          display: "grid",
+          placeItems: "center",
+          fontFamily: TEXT.family,
+          color: TEXT.color,
           position: "relative",
         }}
       >
@@ -44,10 +53,15 @@ function AgeChart({ country, agesSorted, byCountry, mode, loading, height = 320 
   return (
     <div
       style={{
-        width: "100%", height,
-        border: CARD.border, borderRadius: CARD.radius, background: CARD.bg,
-        padding: CARD.padding, boxSizing: "border-box",
-        fontFamily: TEXT.family, position: "relative",
+        width: "100%",
+        height,
+        border: CARD.border,
+        borderRadius: CARD.radius,
+        background: CARD.bg,
+        padding: CARD.padding,
+        boxSizing: "border-box",
+        fontFamily: TEXT.family,
+        position: "relative",
       }}
     >
       <ResponsiveContainer width="100%" height="100%">
@@ -70,21 +84,29 @@ function AgeChart({ country, agesSorted, byCountry, mode, loading, height = 320 
             labelStyle={{ color: TEXT.color, fontSize: TEXT.size }}
             itemStyle={{ color: TEXT.color, fontSize: TEXT.size }}
             formatter={(v, n) => [v, n]}
-            labelFormatter={(l) => `Age ${l}`}
+            labelFormatter={l => `Age ${l}`}
           />
-          {mode !== "Male"  && <Bar dataKey="Female" fill={AGE_COLORS.Female} radius={CHART.barRadius} barSize={barSize} />}
-          {mode !== "Female" && <Bar dataKey="Male"   fill={AGE_COLORS.Male}   radius={CHART.barRadius} barSize={barSize} />}
+          {mode !== "Male" && (
+            <Bar dataKey="Female" fill={AGE_COLORS.Female} radius={CHART.barRadius} barSize={barSize} />
+          )}
+          {mode !== "Female" && (
+            <Bar dataKey="Male" fill={AGE_COLORS.Male} radius={CHART.barRadius} barSize={barSize} />
+          )}
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
+/**
+ * Section displaying age distribution by gender for a country.
+ */
 export default function AgeDistributionSection({ country = COUNTRY }) {
   const { agesSorted, byCountry, loading } = useAgeDistribution();
   const [mode, setMode] = useState("Female"); // "Female" | "Male" | "Both"
 
-  const btn = (active) => ({
+  // Button style helper
+  const btn = active => ({
     ...BUTTON.base,
     background: active ? BUTTON.activeBg : BUTTON.base.background,
     fontFamily: TEXT.family,
@@ -98,14 +120,13 @@ export default function AgeDistributionSection({ country = COUNTRY }) {
           {country} · Age distribution by gender
         </h3>
         <div style={{ display: "flex", gap: 8 }}>
-          {["Female", "Male", "Both"].map((g) => (
+          {["Female", "Male", "Both"].map(g => (
             <button key={g} onClick={() => setMode(g)} style={btn(mode === g)}>
               {g}
             </button>
           ))}
         </div>
       </div>
-
       <AgeChart
         country={country}
         agesSorted={agesSorted}

@@ -16,21 +16,16 @@ from routers.top_categories_by_season import router as top_categories_by_season_
 from routers.top_products import router as top_products_router
 from routers.top_repurchase_by_country import router as top_repurchase_by_country_router
 
-# ---- FastAPI app initialization ----
 app = FastAPI(title="Item Dashboard")
 
-# ---- CORS middleware setup ----
-# If you have trouble with frontend requests being blocked, check allowed origins here.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Update this if your frontend runs elsewhere
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ---- Register API routers ----
-# If endpoints are missing, make sure routers are included here.
 app.include_router(countries_router.router)
 app.include_router(country_top_cities_router.router)
 app.include_router(country_revenue_router)
@@ -44,15 +39,10 @@ app.include_router(top_categories_by_season_router)
 app.include_router(top_products_router)
 app.include_router(top_repurchase_by_country_router)
 
-# ---- Health check endpoint ----
-# Use this to verify the API server is running and responsive.
 @app.get("/health")
 def health():
     return {"ok": True}
 
-# ---- Root summary endpoint ----
-# Returns customer counts by country.
-# If this fails, check that the customers_clean.csv file is present and columns are correct.
 @app.get("/")
 def root_summary(df: pd.DataFrame = Depends(get_customers_df)):
     return countries_router.customers_by_country(df)
