@@ -13,17 +13,22 @@ export default function useChannelShare(country = COUNTRY) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const base = apiBase();
-
+  const base = apiBase(); // "/api" in browser
 
   useEffect(() => {
     let cancelled = false;
+    const ctrl = new AbortController();
+
     setLoading(true);
     setError(null);
 
-    fetch(`${base}/api/countries_by_channel`, { cache: "no-store" })
-      .then(r => r.json())
-      .then(j => {
+    // NOTE: no extra '/api' — base already includes it
+    fetch(`${base}/countries_by_channel`, { cache: "no-store", signal: ctrl.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((j) => {
         if (cancelled) return;
         const arr = j?.countries_by_channel?.[country];
         setRows(Array.isArray(arr) ? arr : []);
@@ -35,8 +40,12 @@ export default function useChannelShare(country = COUNTRY) {
         if (!cancelled) setLoading(false);
       });
 
-    return () => { cancelled = true; };
-  }, [base, country]);
+    return () => {
+      cancelled = true;
+      ctrl.abort();
+    };
+    // base is effectively constant in the browser
+  }, [country]);
 
   // Total customers for the country
   const total = useMemo(
@@ -48,7 +57,7 @@ export default function useChannelShare(country = COUNTRY) {
   const data = useMemo(() => {
     if (!total) return [{ _label: "" }];
     const o = { _label: "" };
-    rows.forEach(r => {
+    rows.forEach((r) => {
       o[r.channel] = (Number(r.customers_count) || 0) / total;
     });
     return [o];

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { COUNTRY } from "../country";
 import { apiBase } from "@/app/lib/apiBase";
+
 /**
  * Fetches top brands for a country.
  * Returns: { rows, loading, error }
@@ -14,37 +15,40 @@ export function useTopBrands(country = COUNTRY, limit = 10) {
 
   useEffect(() => {
     let cancelled = false;
+    const ctrl = new AbortController();
     setLoading(true);
     setError(null);
 
-    const base = apiBase();
-    const url = `${base}/api/top_brands_by_country/?country=${encodeURIComponent(country)}&limit=${limit}`;
+    const base = (apiBase() || "/api").replace(/\/+$/, "");
+    const url = `${base}/top_brands_by_country/?country=${encodeURIComponent(country)}&limit=${limit}`;
 
-    fetch(url, { cache: "no-store" })
-      .then(res => {
+    fetch(url, { cache: "no-store", signal: ctrl.signal })
+      .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
-      .then(json => {
+      .then((json) => {
         if (cancelled) return;
+        const arr = Array.isArray(json?.data) ? json.data : [];
         setRows(
-          Array.isArray(json?.data)
-            ? json.data.map(r => ({
-                brand: r.brand,
-                count: Number(r.count) || 0,
-                rank: Number(r.rank) || 0,
-              }))
-            : []
+          arr.map((r) => ({
+            brand: r.brand,
+            count: Number(r.count) || 0,
+            rank: Number(r.rank) || 0,
+          }))
         );
       })
-      .catch(e => {
+      .catch((e) => {
         if (!cancelled) setError(e?.message || "Failed to load top brands");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      ctrl.abort();
+    };
   }, [country, limit]);
 
   return { rows, loading, error };

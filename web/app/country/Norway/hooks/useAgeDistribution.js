@@ -1,3 +1,4 @@
+// app/country/Denmark/hooks/useAgeDistribution.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,23 +8,35 @@ export default function useAgeDistribution() {
   const [agesSorted, setAgesSorted] = useState([]);
   const [byCountry, setByCountry] = useState({});
   const [loading, setLoading] = useState(false);
-  const base = apiBase(); // will be "/api" in the browser
+  const base = apiBase(); // "/api" in browser
 
   useEffect(() => {
     let isMounted = true;
+    const ctrl = new AbortController();
+
     setLoading(true);
-    fetch(`${base}/customers_age_gender`, { cache: "no-store" })
-      .then(r => r.json())
-      .then(json => {
+    fetch(`${base}/customers_age_gender`, { cache: "no-store", signal: ctrl.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((json) => {
         if (!isMounted) return;
         setAgesSorted(Array.isArray(json.ages_sorted) ? json.ages_sorted : []);
         setByCountry(json.by_country || {});
       })
-      .catch(() => {})
-      .finally(() => { if (isMounted) setLoading(false); });
+      .catch(() => {
+        /* optional: report error */
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
 
-    return () => { isMounted = false; };
-  }, [base]);
+    return () => {
+      isMounted = false;
+      ctrl.abort();
+    };
+  }, []); 
 
   return { agesSorted, byCountry, loading };
 }
