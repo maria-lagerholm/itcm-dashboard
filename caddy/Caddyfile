@@ -1,0 +1,11 @@
+:80 {
+	# keep full /api/... path when proxying
+	handle /api/* {
+		reverse_proxy api:8000
+	}
+
+	# everything else → Next.js
+	handle {
+		reverse_proxy web:3000
+	}
+}

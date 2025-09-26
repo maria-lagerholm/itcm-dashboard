@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { COUNTRY } from "../country";
+import { apiBase } from "@/app/lib/apiBase";
 
 /**
  * Fetches top repurchased products for a country.
@@ -14,39 +15,45 @@ export default function useTopRepurchase(country = COUNTRY, limit = 10) {
 
   useEffect(() => {
     let cancelled = false;
+    const ctrl = new AbortController();
+
     setLoading(true);
     setError(null);
 
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
-    const url = `${base}/api/top_repurchase_by_country/?country=${encodeURIComponent(country)}&limit=${limit}`;
+    const base = (apiBase() || "/api").replace(/\/+$/, "");
+    const url = `${base}/top_repurchase_by_country/?country=${encodeURIComponent(
+      country
+    )}&limit=${limit}`;
 
-    fetch(url, { cache: "no-store" })
-      .then(res => {
+    fetch(url, { cache: "no-store", signal: ctrl.signal })
+      .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then(({ data }) => {
         if (cancelled) return;
+        const arr = Array.isArray(data) ? data : [];
         setRows(
-          Array.isArray(data)
-            ? data.map(r => ({
-                product: r.product ?? r.name,
-                product_id: r.product_id ?? r.value,
-                brand: r.brand ?? null,
-                repurchasers: Number(r.repurchasers) || 0,
-                rank: Number(r.rank) || 0,
-              }))
-            : []
+          arr.map((r) => ({
+            product: r.product ?? r.name,
+            product_id: r.product_id ?? r.value,
+            brand: r.brand ?? null,
+            repurchasers: Number(r.repurchasers) || 0,
+            rank: Number(r.rank) || 0,
+          }))
         );
       })
-      .catch(e => {
-        if (!cancelled) setError(e.message || "Failed to load repurchase data");
+      .catch((e) => {
+        if (!cancelled) setError(e?.message || "Failed to load repurchase data");
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      ctrl.abort();
+    };
   }, [country, limit]);
 
   return { rows, loading, error };

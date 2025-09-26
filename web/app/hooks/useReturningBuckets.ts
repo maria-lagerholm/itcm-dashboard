@@ -2,14 +2,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiBase } from "@/app/lib/apiBase";
 
 type ReturningRow = { bucket: string; customers: number };
 type ApiResp = { data: ReturningRow[]; meta: { total_customers: number; etag?: string } };
 
+// Build URLs: "/api" in browser, "http://api:8000/api" on server
+function api(path: string) {
+  const b = (apiBase() || "/api").replace(/\/+$/, "");
+  const p = String(path ?? "").replace(/^\/+/, "");
+  return `${b}/${p}`;
+}
+
 export function useReturningBuckets() {
   const [rows, setRows] = useState<{ country: string; count: number }[]>([]);
   const [total, setTotal] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [etag, setEtag] = useState<string | undefined>(undefined);
 
@@ -26,14 +34,8 @@ export function useReturningBuckets() {
       setLoading(true);
       setError(null);
       try {
-        // Try your current origin first (works if rewrites/proxy handle it),
-        // then fall back to common FastAPI dev URLs.
-        const candidates = [
-          "/api/returning/",
-          "/api/returning",
-          "http://localhost:8000/api/returning/",
-          "http://127.0.0.1:8000/api/returning/",
-        ];
+        // Try with and without trailing slash
+        const candidates = [api("returning/"), api("returning")];
 
         let json: ApiResp | null = null;
         let hit = "";
@@ -52,8 +54,8 @@ export function useReturningBuckets() {
         if (abort) return;
 
         const mapped =
-          (json.data ?? []).map((r) => ({
-            country: r.bucket,                 // reuse CountryBarChart
+          (json.data ?? []).map((r: ReturningRow) => ({
+            country: r.bucket,
             count: Number(r.customers) || 0,
           })) ?? [];
 

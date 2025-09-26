@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { COUNTRY } from "../country";
+import { apiBase } from "@/app/lib/apiBase";
 
 /**
  * Fetches and computes channel share data for a given country.
@@ -12,11 +13,8 @@ export default function useChannelShare(country = COUNTRY) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // API base URL, fallback to localhost for development
-  const base = useMemo(
-    () => process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000",
-    []
-  );
+  const base = apiBase();
+
 
   useEffect(() => {
     let cancelled = false;

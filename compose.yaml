@@ -1,11 +1,12 @@
+version: "3.9"
+
 services:
   api:
     build:
       context: .
       dockerfile: api/Dockerfile
     container_name: itcm-dashboard
-    ports:
-      - "8000:8000"
+    # no host port published; proxy will reach it on the internal network
     volumes:
       - ./api:/app          # live code mount (hot reload watches this)
       - ./data:/app/data:ro # your CSVs
@@ -13,19 +14,36 @@ services:
       ENV: dev
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     restart: unless-stopped
-    # platform: linux/amd64  # only if you must force x86_64
+
   web:
     build:
       context: ./web
       dockerfile: Dockerfile.dev
     container_name: item-dashboard-web
-    ports:
-      - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_BASE_URL: "http://localhost:8000"
+      NEXT_PUBLIC_API_BASE_URL: "/api"
+      INTERNAL_API_BASE_URL: http://api:8000
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: "1"
+      CHOKIDAR_USEPOLLING: "true"
+      PORT: "3000"              # pin dev to 3000
+    command: sh -c "PORT=3000 npm run dev"  # ensure Next binds to 3000
     volumes:
-      - ./web:/app            # live-edit source
-      - /app/node_modules     # keep container's node_modules
+      - ./web:/app
+      - /app/node_modules
     depends_on:
       - api
     restart: unless-stopped
+
+    # no host port published; proxy will reach it on the internal network
+
+  proxy:
+    image: caddy:2
+    container_name: proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./caddy:/etc/caddy:ro    # <— mount dir, not file
+    depends_on:
+      - web
+      - api

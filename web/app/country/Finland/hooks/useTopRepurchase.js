@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { COUNTRY } from "../country";
+import { apiBase } from "@/app/lib/apiBase";
 
 /**
  * Fetches top repurchased products for a country.
@@ -17,7 +18,7 @@ export default function useTopRepurchase(country = COUNTRY, limit = 10) {
     setLoading(true);
     setError(null);
 
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+    const base = apiBase();
     const url = `${base}/api/top_repurchase_by_country/?country=${encodeURIComponent(country)}&limit=${limit}`;
 
     fetch(url, { cache: "no-store" })

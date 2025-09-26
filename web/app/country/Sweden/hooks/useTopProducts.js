@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { COUNTRY } from "../country";
+import { apiBase } from "@/app/lib/apiBase";
 
 // Season order for sorting
 const SEASON_ORDER = ["Winter", "Spring", "Summer", "Autumn"];
@@ -37,7 +38,7 @@ export default function useTopProducts(country = COUNTRY, limit = 10) {
       setLoadingMeta(true);
       setMetaError(null);
       try {
-        const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+        const base = apiBase();
         const res = await fetch(
           `${base}/api/top_products_by_season/?country=${encodeURIComponent(country)}`,
           { cache: "no-store" }

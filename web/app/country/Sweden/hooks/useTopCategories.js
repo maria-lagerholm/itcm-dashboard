@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { COUNTRY } from "../country";
+import { apiBase } from "@/app/lib/apiBase";
 
 const SEASON_ORDER = ["Winter", "Spring", "Summer", "Autumn"];
 
@@ -35,7 +36,7 @@ export function useTopCategories(country = COUNTRY, limit = 12) {
       setLoadingMeta(true);
       setMetaError(null);
       try {
-        const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+        const base = apiBase();
         const url = `${base}/api/top_categories_by_season/?country=${encodeURIComponent(country)}`;
         const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);

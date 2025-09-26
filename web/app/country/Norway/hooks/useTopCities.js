@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { sortByMonthJanToDec } from "../utils/formatters";
-
+import { apiBase } from "@/app/lib/apiBase";
 /**
  * Fetches and formats top cities by customers or revenue for a country.
  * Returns: { mode, setMode, data, dataKey, titleSuffix }
@@ -10,7 +10,7 @@ import { sortByMonthJanToDec } from "../utils/formatters";
 export default function useTopCities({ country, countryId, limit = 10 }) {
   const [mode, setMode] = useState("customers"); // "customers" or "revenue"
   const [rows, setRows] = useState([]);
-  const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+  const base = apiBase();
 
   useEffect(() => {
     let active = true;
