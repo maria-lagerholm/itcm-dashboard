@@ -1,3 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## How to access the dashboard
 
-Build URLs: "/api" in browser, "http://api:8000/api" on server
+- **Frontend (dashboard):** http://localhost/
+- **Docs (Swagger):** http://localhost/api/docs
+
+Caddy is used to act as a reverse proxy on port 80, routing `/api/*` to FastAPI and everything else to the Next.js frontend so everything lives under one URL (`http://localhost`).

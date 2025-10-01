@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Optional
 from deps import get_top_brands_df, TOP_BRANDS_PARQUET_PATH
 
-router = APIRouter(prefix="/api/top_brands_by_country", tags=["top_brands_by_country"])
+router = APIRouter(prefix="/top_brands_by_country", tags=["top_brands_by_country"])
 _cache = {"sig": None, "data": None}
 
 def _sig(p: Path):

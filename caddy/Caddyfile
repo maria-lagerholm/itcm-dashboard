@@ -1,11 +1,21 @@
 :80 {
-	# keep full /api/... path when proxying
-	handle /api/* {
-		reverse_proxy api:8000
-	}
+  redir /api /api/docs 302
 
-	# everything else → Next.js
-	handle {
-		reverse_proxy web:3000
-	}
+  # Swagger’s absolute URLs
+  handle /openapi.json {
+    reverse_proxy api:8000
+  }
+  handle /docs* {
+    reverse_proxy api:8000
+  }
+
+  # All prefixed API calls (strip /api)
+  handle_path /api/* {
+    reverse_proxy api:8000
+  }
+
+  # Everything else → Next.js
+  handle {
+    reverse_proxy web:3000
+  }
 }

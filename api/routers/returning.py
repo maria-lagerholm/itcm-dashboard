@@ -5,7 +5,7 @@ from pandas.api.types import is_integer_dtype
 from pathlib import Path
 from deps import get_return_buckets_df, RETURN_BUCKETS_PARQUET_PATH
 
-router = APIRouter(prefix="/api/returning", tags=["returning"])
+router = APIRouter(prefix="/returning", tags=["returning"])
 _cache = {"sig": None, "data": None}
 
 _ORDER = [

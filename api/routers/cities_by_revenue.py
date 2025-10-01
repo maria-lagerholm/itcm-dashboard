@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 import pandas as pd
 from deps import get_city_summary_df
 
-router = APIRouter(prefix="/api/cities_by_revenue", tags=["cities"])
+router = APIRouter(prefix="/cities_by_revenue", tags=["cities"])
 
 @router.get("")
 def cities_by_revenue(df: pd.DataFrame = Depends(get_city_summary_df)):

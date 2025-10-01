@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Optional
 from deps import get_top_categories_df, TOP_CATEGORIES_PARQUET_PATH
 
-router = APIRouter(prefix="/api/top_categories_by_season", tags=["top_categories_by_season"])
+router = APIRouter(prefix="/top_categories_by_season", tags=["top_categories_by_season"])
 _cache = {"sig": None, "data": None}
 
 def _sig(p: Path):

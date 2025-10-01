@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime, timezone
 from deps import get_city_monthly_revenue_df
 
-router = APIRouter(prefix="/api/sales_month", tags=["sales"])
+router = APIRouter(prefix="/sales_month", tags=["sales"])
 
 @router.get("")
 def sales_per_month_by_country(

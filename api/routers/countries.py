@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from deps import get_customer_summary_df
 
-router = APIRouter(prefix="/api/countries", tags=["countries"])
+router = APIRouter(prefix="/countries", tags=["countries"])
 
 def _country_col(df: pd.DataFrame) -> str:
     for c in ("country", "Country"):

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 import pandas as pd
 from deps import get_countries_by_channel_df
 
-router = APIRouter(prefix="/api/countries_by_channel", tags=["countries"])
+router = APIRouter(prefix="/countries_by_channel", tags=["countries"])
 
 @router.get("")
 def countries_by_channel(df: pd.DataFrame = Depends(get_countries_by_channel_df)):

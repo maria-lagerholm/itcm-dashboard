@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Path, Query
 import pandas as pd
 from deps import get_city_summary_df
 
-router = APIRouter(prefix="/api/country", tags=["country"])
+router = APIRouter(prefix="/country", tags=["country"])
 
 @router.get("/{country}/top-cities")
 def top_cities(

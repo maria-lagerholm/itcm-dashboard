@@ -16,7 +16,7 @@ from routers.top_categories_by_season import router as top_categories_by_season_
 from routers.top_products import router as top_products_router
 from routers.top_repurchase_by_country import router as top_repurchase_by_country_router
 
-app = FastAPI(title="Item Dashboard")
+app = FastAPI(root_path="/api")
 
 app.add_middleware(
     CORSMiddleware,

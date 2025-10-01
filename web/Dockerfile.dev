@@ -1,10 +1,20 @@
+# web/Dockerfile.dev
 FROM node:20-alpine
 WORKDIR /app
-RUN apk add --no-cache bash
-ENV CI=true
-COPY package*.json ./
-RUN npm install
-COPY . .
-EXPOSE 3000
-CMD ["npm","run","dev"]
 
+# Helpful for Next.js on Alpine
+RUN apk add --no-cache bash libc6-compat
+
+ENV CI=true NODE_ENV=development
+
+# Better, reproducible installs
+COPY package*.json ./
+RUN npm ci
+
+# Copy the rest (will be overlaid by your bind mount in compose)
+COPY . .
+
+EXPOSE 3000
+
+# If compose passes flags, keep this simple:
+CMD ["npm","run","dev"]

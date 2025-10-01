@@ -5,7 +5,7 @@ import pandas as pd
 
 from deps import get_top_groups_df  # columns: country, season_label, value, name, count, rank
 
-router = APIRouter(prefix="/api/top_products_by_season", tags=["top_products_by_season"])
+router = APIRouter(prefix="/top_products_by_season", tags=["top_products_by_season"])
 
 # load once; keep it minimal
 DF: pd.DataFrame = get_top_groups_df()

@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException, Query
 from deps import get_top_repurchase_df
 
-router = APIRouter(prefix="/api/top_repurchase_by_country", tags=["top_repurchase_by_country"])
+router = APIRouter(prefix="/top_repurchase_by_country", tags=["top_repurchase_by_country"])
 
 DF = get_top_repurchase_df()
 

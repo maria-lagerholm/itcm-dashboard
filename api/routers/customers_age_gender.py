@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 import pandas as pd
 from deps import get_customer_summary_df
 
-router = APIRouter(prefix="/api/customers_age_gender", tags=["customers"])
+router = APIRouter(prefix="/customers_age_gender", tags=["customers"])
 
 @router.get("")
 def customers_age_gender(customers: pd.DataFrame = Depends(get_customer_summary_df)):

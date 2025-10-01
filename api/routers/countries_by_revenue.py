@@ -4,7 +4,7 @@ import pandas as pd
 from pathlib import Path
 from deps import get_country_summary_df, COUNTRY_SUMMARY_PARQUET_PATH
 
-router = APIRouter(prefix="/api/countries_by_revenue", tags=["countries"])
+router = APIRouter(prefix="/countries_by_revenue", tags=["countries"])
 
 _cache = {"sig": None, "data": None}
 
