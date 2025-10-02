@@ -16,7 +16,7 @@ def get_top_products_by_season(
     season_label: Optional[str] = Query(
         None, description="e.g. 'Summer 2025'. Omit to list available season labels for the country."
     ),
-    limit: int = Query(10, ge=1, le=10),  # cap at 10 (your parquet has 10 groupids per season)
+    limit: int = Query(100, ge=1, le=100),  # cap at 10 (your parquet has 10 groupids per season)
 ):
     df = DF[DF["country"] == country]
 

@@ -15,6 +15,7 @@ from routers.top_brands_by_country import router as top_brands_by_country_router
 from routers.top_categories_by_season import router as top_categories_by_season_router
 from routers.top_products import router as top_products_router
 from routers.top_repurchase_by_country import router as top_repurchase_by_country_router
+from routers.cooccurrence import router as cooccurrence_router
 
 app = FastAPI(root_path="/api")
 
@@ -27,6 +28,7 @@ app.add_middleware(
 )
 
 app.include_router(countries_router.router)
+app.include_router(cooccurrence_router)
 app.include_router(country_top_cities_router.router)
 app.include_router(country_revenue_router)
 app.include_router(cities_by_revenue_router)

@@ -7,7 +7,8 @@ import Spinner from "./components/Spinner";
 import { useCountryDatasets } from "./hooks/useCountryDatasets";
 import { useReturningBuckets } from "./hooks/useReturningBuckets";
 import CountryBarChart from "./components/CountryBarChart";
-import ReturningPatterns from "./components/ReturningPatterns"; // ← fixed path
+import ReturningPatterns from "./components/ReturningPatterns";
+import CooccurrenceSection from "./components/CooccurrenceSection";
 
 export default function Home() {
   const {
@@ -138,6 +139,11 @@ export default function Home() {
           </>
         )}
       </section>
+            {/* Frequently Bought Together (pairs) */}
+      <section style={{ marginTop: 36 }}>
+        <CooccurrenceSection title="Frequently Bought Together (pairs, sorted by affinity strength)" />
+      </section>
+
     </main>
   );
 }

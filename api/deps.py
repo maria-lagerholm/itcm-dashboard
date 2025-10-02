@@ -18,6 +18,7 @@ TOP_BRANDS_PARQUET_PATH       = Path("/app/data/top_brands_by_country.parquet")
 TOP_CATEGORIES_PARQUET_PATH   = Path("/app/data/top_categories_by_season.parquet")
 TOP_GROUPS_PARQUET_PATH       = Path("/app/data/top_groupids_by_season.parquet")
 TOP_REPURCHASE_PARQUET_PATH   = Path("/app/data/top_repurchase_groupids_by_country.parquet")
+COOCURRING_GROUPS_PARQUET_PATH = Path("/app/data/pair_cooccurrences.parquet")
 
 _customers_df = None
 _transactions_df = None
@@ -34,6 +35,8 @@ _top_brands_df = None
 _top_categories_df = None
 _top_groups_df = None
 _top_repurchase_df = None
+_cooccurring_groups_df = None
+
 
 def _get(df_var: str, path: Path) -> pd.DataFrame:
     g = globals()
@@ -56,3 +59,4 @@ def get_top_brands_df():            return _get("_top_brands_df", TOP_BRANDS_PAR
 def get_top_categories_df():        return _get("_top_categories_df", TOP_CATEGORIES_PARQUET_PATH)
 def get_top_groups_df():            return _get("_top_groups_df", TOP_GROUPS_PARQUET_PATH)
 def get_top_repurchase_df():        return _get("_top_repurchase_df", TOP_REPURCHASE_PARQUET_PATH)
+def get_cooccurring_groups_df():    return _get("_cooccurring_groups_df", COOCURRING_GROUPS_PARQUET_PATH)

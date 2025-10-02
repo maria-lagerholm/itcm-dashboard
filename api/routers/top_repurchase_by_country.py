@@ -9,7 +9,7 @@ DF = get_top_repurchase_df()
 @router.get("/")
 def top_repurchase_by_country(
     country: str = Query(..., description="Country"),
-    limit: int = Query(10, ge=1, le=10),
+    limit: int = Query(100, ge=1, le=100),
 ):
     df = DF[DF["country"] == country]
     if df.empty:
