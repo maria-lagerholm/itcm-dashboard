@@ -1,6 +1,14 @@
 // components/CooccurrenceTable.jsx
 import { COLORS, TEXT, TREEMAP } from "@/app/theme";
 
+const COLS = [
+  { key: "rank", width: 56 },
+  { key: "aName", width: "auto" },
+  { key: "aId", width: 180 },
+  { key: "bName", width: "auto" },
+  { key: "bId", width: 180 },
+];
+
 export default function CooccurrenceTable({ rows = [] }) {
   return (
     <div
@@ -23,11 +31,9 @@ export default function CooccurrenceTable({ rows = [] }) {
           }}
         >
           <colgroup>
-            <col style={{ width: 56 }} />       {/* # */}
-            <col style={{ width: "auto" }} />   {/* Product A name */}
-            <col style={{ width: 180 }} />      {/* Product A ID */}
-            <col style={{ width: "auto" }} />   {/* Product B name */}
-            <col style={{ width: 180 }} />      {/* Product B ID */}
+            {COLS.map(c => (
+              <col key={c.key} style={{ width: c.width }} />
+            ))}
           </colgroup>
 
           <thead style={{ background: "#fff" }}>
@@ -41,8 +47,8 @@ export default function CooccurrenceTable({ rows = [] }) {
           </thead>
 
           <tbody>
-            {rows.length > 0 ? (
-              rows.map((r) => (
+            {rows.length ? (
+              rows.map(r => (
                 <tr key={`${r.aId}-${r.bId}-${r.rank}`}>
                   <td style={td}>{r.rank}</td>
                   <td style={td}>{r.aName}</td>
@@ -65,16 +71,12 @@ export default function CooccurrenceTable({ rows = [] }) {
   );
 }
 
-// Table cell styles
+// styles
 const cellBase = { padding: "12px 14px", borderBottom: `1px solid ${TREEMAP.containerBorder}` };
 const stickyBase = { position: "sticky", top: 0, background: "#fff", zIndex: 1 };
-
 const th = { ...cellBase, textAlign: "left", fontWeight: 600 };
 const thSticky = { ...th, ...stickyBase };
-
 const td = { ...cellBase, background: "#fff" };
-
-// ID cells: one line with ellipsis
 const tdMonoNowrap = {
   ...td,
   fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
