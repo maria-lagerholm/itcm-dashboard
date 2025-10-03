@@ -1,11 +1,11 @@
-// app/.../useTopProducts.js
+// useTopProducts.js (for deployment)
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { COUNTRY } from "../country";
 import { apiBase } from "@/app/lib/apiBase";
 
-// Season order for sorting
+// Order of seasons for sorting
 const SEASON_ORDER = ["Winter", "Spring", "Summer", "Autumn"];
 
 const parseYear = (sl) => {
@@ -15,10 +15,10 @@ const parseYear = (sl) => {
 const parseSeason = (sl) => String(sl || "").replace(/\s+\d{4}$/, "");
 
 /**
- * Fetches top products by season for a country.
+ * Hook to fetch top products by season for a country.
  * Returns: { rows, loading, error, years, seasonsForSelectedYear, year, setYear, season, setSeason }
  */
-export default function useTopProducts(country = COUNTRY, limit = 10) {
+export default function useTopProducts(country = COUNTRY, limit = 100) {
   const [loadingMeta, setLoadingMeta] = useState(true);
   const [metaError, setMetaError] = useState(null);
   const [availableByYear, setAvailableByYear] = useState({});
@@ -30,7 +30,7 @@ export default function useTopProducts(country = COUNTRY, limit = 10) {
   const [loadingRows, setLoadingRows] = useState(true);
   const [rowsError, setRowsError] = useState(null);
 
-  // Load available seasons per year
+  // Fetch available seasons per year
   useEffect(() => {
     let cancelled = false;
     const ctrl = new AbortController();
@@ -68,7 +68,7 @@ export default function useTopProducts(country = COUNTRY, limit = 10) {
         setAvailableByYear(normalized);
         setYears(yearsSorted);
 
-        // Defaults: latest year + first season available
+        // Set defaults: latest year and first available season
         const defaultYear = yearsSorted[0] ?? null;
         const firstSeason = defaultYear ? normalized[defaultYear]?.[0] ?? null : null;
         setYear(defaultYear);
@@ -94,7 +94,7 @@ export default function useTopProducts(country = COUNTRY, limit = 10) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, availableByYear]);
 
-  // Fetch top products for selected season
+  // Fetch top products for the selected season
   useEffect(() => {
     if (!year || !season) return;
     let cancelled = false;

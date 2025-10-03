@@ -6,7 +6,7 @@ export const COLORS = {
   nonary: "#dbdb8d", denary: "#9edae5", undenary: "#CCEBC5", duodenary: "#FFED6F",
   grid: "#E5E7EA", text: "#1f2937",
   web: "#1bada0", telephone: "#227c9d", letter: "#ffcb77", other: "#e37fae", email: "#fe6d73",
-  segments: { New: "#137d73", Repeat: "#2a9d92", Loyal: "#30c4b2" },
+  segments: { New: "#137d73", Returning: "#2a9d92", Loyal: "#30c4b2" },
   series: { revenue: "#31a1b3", brand: "#6fb899", city: "#31a1b3", returning: "#31a1b3" },
   age: { female: "#f1788d", male: "#6388b4" },
 };
@@ -30,11 +30,11 @@ export const CHANNEL_COLORS = {
 };
 
 // Segment order for display
-export const SEGMENT_ORDER = ["New", "Repeat", "Loyal"];
+export const SEGMENT_ORDER = ["New", "Returning", "Loyal"];
 
 // Segment labels for tooltips or legends
 export const SEGMENT_LABELS = {
-  New: "New = 1 order", Repeat: "Repeat = 2–3 orders", Loyal: "Loyal = ≥4 orders",
+  New: "New = 1 order", Returning: "Returning = 2–3 orders", Loyal: "Loyal = ≥4 orders",
 };
 
 // Chart style constants
@@ -43,6 +43,7 @@ export const CHART = {
   margin: { top: 8, right: 12, bottom: 32, left: 12 },
   tickFont: 14,
 };
+
 
 // Text style constants
 export const TEXT = {

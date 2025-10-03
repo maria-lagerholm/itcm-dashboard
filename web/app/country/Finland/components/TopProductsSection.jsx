@@ -10,7 +10,7 @@ import { TEXT, LAYOUT, SECTION, HEADINGS, UI, BUTTON } from "@/app/theme";
  */
 export default function TopProductsSection({
   country = COUNTRY,
-  limit = 10,
+  limit = 100,
   title = `${COUNTRY} · Top products by season/year`,
 }) {
   const {

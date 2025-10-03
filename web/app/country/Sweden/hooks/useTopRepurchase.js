@@ -8,7 +8,7 @@ import { apiBase } from "@/app/lib/apiBase";
  * Fetches top repurchased products for a country.
  * Returns: { rows, loading, error }
  */
-export default function useTopRepurchase(country = COUNTRY, limit = 10) {
+export default function useTopRepurchase(country = COUNTRY, limit = 100) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

@@ -2,7 +2,6 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 
-from deps import get_customers_df
 from routers import countries as countries_router
 from routers import country_top_cities as country_top_cities_router
 from routers.countries_by_revenue import router as country_revenue_router
@@ -44,7 +43,3 @@ app.include_router(top_repurchase_by_country_router)
 @app.get("/health")
 def health():
     return {"ok": True}
-
-@app.get("/")
-def root_summary(df: pd.DataFrame = Depends(get_customers_df)):
-    return countries_router.customers_by_country(df)

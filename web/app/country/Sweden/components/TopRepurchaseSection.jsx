@@ -10,7 +10,7 @@ import { TEXT, LAYOUT, SECTION, UI, COLORS } from "@/app/theme";
  */
 export default function TopRepurchaseSection({
   country = COUNTRY,
-  limit = 10,
+  limit = 100,
   title = `${COUNTRY} · Top products customers buy again`,
 }) {
   const { rows, loading, error } = useTopRepurchase(country, limit);
