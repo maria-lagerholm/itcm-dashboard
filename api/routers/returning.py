@@ -3,14 +3,13 @@ from deps import get_return_buckets_df
 
 router = APIRouter(prefix="/returning", tags=["returning"])
 
-DF = get_return_buckets_df()
-
 @router.get("/")
 def get_returning():
+    df = get_return_buckets_df()
     return {
-        "data": DF.to_dict(orient="records"),
+        "data": df.to_dict(orient="records"),
         "meta": {
-            "total_customers": int(DF["customers"].sum()),
-            "buckets": int(DF.shape[0]),
+            "total_customers": int(df["customers"].sum()),
+            "buckets": int(df.shape[0]),
         },
     }

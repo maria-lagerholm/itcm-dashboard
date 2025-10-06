@@ -6,13 +6,14 @@ from deps import get_country_summary_df
 router = APIRouter(prefix="/countries_by_revenue", tags=["countries"])
 
 def _build_payload(df: pd.DataFrame):
-    d = df[["country", "total_revenue_sek", "total_orders", "avg_order_value_sek"]].copy()
-    ksek = (d["total_revenue_sek"] + 500) // 1000
-    countries = d["country"].astype(str)
+    d = df.loc[:, ["country", "total_revenue_sek", "total_orders", "avg_order_value_sek"]].copy()
+    d["ksek"] = (d["total_revenue_sek"] / 1000).round().astype("int64")
+    d["avg_order_value_sek"] = d["avg_order_value_sek"].astype("object").where(d["avg_order_value_sek"].notna(), None)
+
     return {
-        "revenue_by_country_ksek": dict(zip(countries, ksek)),
-        "avg_order_value_by_country_sek": dict(zip(countries, d["avg_order_value_sek"])),
-        "orders_count_by_country": dict(zip(countries, d["total_orders"])),
+        "revenue_by_country_ksek": d.set_index("country")["ksek"].to_dict(),
+        "avg_order_value_by_country_sek": d.set_index("country")["avg_order_value_sek"].to_dict(),
+        "orders_count_by_country": d.set_index("country")["total_orders"].astype("int64").to_dict(),
     }
 
 @router.get("")

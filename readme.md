@@ -1,8 +1,18 @@
-# item-dashboard
-Dashboard stack: **FastAPI** API + **Next.js** web UI.
-Reads CSVs from `./data` and serves simple aggregates for drill-down charts.
+# BI Dashboard 
+The backend (FastAPI) turns parquet files into a set of JSON endpoints so the frontend can render charts without data wrangling. **main.py** is where all backend modules are assembled together.
 
-## Structure (initial)
+Open [http://localhost](http://localhost) to see the backend result.
+
+
+The frontend is a Next.js app organized by country folders such as `app/country/Denmark/`. Each page uses a single `COUNTRY` constant and a few hooks that call the API and shape fields for charts. All visuals are theme-driven through `app/theme.js`, so colors, typography, spacing, grid lines, and tooltip styles change in one place and propagate everywhere. **/app/app/page.jsx** is where all frontend elements are assembled together.
+
+Open [http://localhost/api/docs#](http://localhost/api/docs#) to see the FE result.
+
+The goal is to quickly deliver analytics on demand and host the dashboard on a server so clients can access it easily and get regular updates.
+
+
+
+## Structure
 
 ```
 itcm-dashboard/
@@ -22,34 +32,3 @@ itcm-dashboard/
 └─ compose.yaml          # runs api (8000) + web (3000)
 ```
 
-## Backend (FastAPI)
-
-* Serves JSON aggregates; **no HTML**.
-* CSV path inside container: `/app/data/customers.csv`.
-* CORS allows `http://localhost:3000`.
-
-**Key endpoints**
-
-* `GET /health` → `{ "ok": true }`
-* `GET /api/countries` → `{ customers_by_country: { Sweden: 34570, ... } }`
-* `GET /api/country/{invoiceCountryId}/top-cities?limit=10`
-  → `{ country_id, top_cities: [{ city, unique_customers }, ...] }`
-
-## Frontend (Next.js)
-
-* Fetches API via `NEXT_PUBLIC_API_BASE_URL` (default `http://localhost:8000`).
-* Overview bar chart on `/`; drill-down pages under `/country/...`.
-
-## Run (dev)
-
-```bash
-# from repo root
-docker compose up -d --build
-# API:   http://localhost:8000  (docs at /docs)
-# Web:   http://localhost:3000
-```
-
-## Notes
-
-* Edit Python under `./api` and Next.js under `./web`; both are bind-mounted with hot reload.
-* Change chart look in `web/app/theme.js`.

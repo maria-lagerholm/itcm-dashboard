@@ -1,62 +1,56 @@
-# deps.py
-# Dependency loader for Parquet DataFrames (cached per process)
+# deps.py (better: cached, auto-invalidate on mtime, simple API)
+from functools import lru_cache
 from pathlib import Path
 import pandas as pd
 
-CUSTOMERS_PARQUET_PATH        = Path("/app/data/customers_clean.parquet")
-TRANSACTIONS_PARQUET_PATH     = Path("/app/data/transactions_clean.parquet")
-ARTICLES_PARQUET_PATH         = Path("/app/data/articles_clean.parquet")
-ORDERS_PARQUET_PATH           = Path("/app/data/orders.parquet")
-ORDER_ITEMS_PARQUET_PATH      = Path("/app/data/order_items.parquet")
-CUSTOMER_SUMMARY_PARQUET_PATH = Path("/app/data/customer_summary.parquet")
-COUNTRY_SUMMARY_PARQUET_PATH  = Path("/app/data/country_summary.parquet")
-CITY_SUMMARY_PARQUET_PATH     = Path("/app/data/city_summary.parquet")
-CITY_MONTHLY_REVENUE_PARQUET_PATH = Path("/app/data/city_monthly_revenue.parquet")
-COUNTRIES_BY_CHANNEL_PARQUET_PATH = Path("/app/data/country_customers_by_channel.parquet")
-RETURN_BUCKETS_PARQUET_PATH   = Path("/app/data/return_buckets_overall.parquet")
-TOP_BRANDS_PARQUET_PATH       = Path("/app/data/top_brands_by_country.parquet")
-TOP_CATEGORIES_PARQUET_PATH   = Path("/app/data/top_categories_by_season.parquet")
-TOP_GROUPS_PARQUET_PATH       = Path("/app/data/top_groupids_by_season.parquet")
-TOP_REPURCHASE_PARQUET_PATH   = Path("/app/data/top_repurchase_groupids_by_country.parquet")
-COOCURRING_GROUPS_PARQUET_PATH = Path("/app/data/pair_cooccurrences.parquet")
+DATA = Path("/app/data")
 
-_customers_df = None
-_transactions_df = None
-_articles_df = None
-_orders_df = None
-_order_items_df = None
-_customer_summary_df = None
-_country_summary_df = None
-_city_summary_df = None
-_city_monthly_revenue_df = None
-_countries_by_channel_df = None
-_return_buckets_df = None
-_top_brands_df = None
-_top_categories_df = None
-_top_groups_df = None
-_top_repurchase_df = None
-_cooccurring_groups_df = None
+PATHS = {
+    "customers":                 DATA / "customers_clean.parquet",
+    "transactions":              DATA / "transactions_clean.parquet",
+    "articles":                  DATA / "articles_clean.parquet",
+    "orders":                    DATA / "orders.parquet",
+    "order_items":               DATA / "order_items.parquet",
+    "customer_summary":          DATA / "customer_summary.parquet",
+    "country_summary":           DATA / "country_summary.parquet",
+    "city_summary":              DATA / "city_summary.parquet",
+    "city_monthly_revenue":      DATA / "city_monthly_revenue.parquet",
+    "countries_by_channel":      DATA / "country_customers_by_channel.parquet",
+    "return_buckets":            DATA / "return_buckets_overall.parquet",
+    "top_brands":                DATA / "top_brands_by_country.parquet",
+    "top_categories":            DATA / "top_categories_by_season.parquet",
+    "top_groups":                DATA / "top_groupids_by_season.parquet",
+    "top_repurchase":            DATA / "top_repurchase_groupids_by_country.parquet",
+    "cooccurring_groups":        DATA / "pair_cooccurrences.parquet",
+}
 
+def _key(path: Path) -> tuple[str, float]:
+    s = path.stat()
+    return (str(path), s.st_mtime)
 
-def _get(df_var: str, path: Path) -> pd.DataFrame:
-    g = globals()
-    if g[df_var] is None:
-        g[df_var] = pd.read_parquet(path, engine="pyarrow")
-    return g[df_var]
+@lru_cache(maxsize=None)
+def _read_cached(path_str: str, mtime: float) -> pd.DataFrame:
+    return pd.read_parquet(path_str, engine="pyarrow")
 
-def get_customers_df():             return _get("_customers_df", CUSTOMERS_PARQUET_PATH)
-def get_transactions_df():          return _get("_transactions_df", TRANSACTIONS_PARQUET_PATH)
-def get_articles_df():              return _get("_articles_df", ARTICLES_PARQUET_PATH)
-def get_orders_df():                return _get("_orders_df", ORDERS_PARQUET_PATH)
-def get_order_items_df():           return _get("_order_items_df", ORDER_ITEMS_PARQUET_PATH)
-def get_customer_summary_df():      return _get("_customer_summary_df", CUSTOMER_SUMMARY_PARQUET_PATH)
-def get_country_summary_df():       return _get("_country_summary_df", COUNTRY_SUMMARY_PARQUET_PATH)
-def get_city_summary_df():          return _get("_city_summary_df", CITY_SUMMARY_PARQUET_PATH)
-def get_city_monthly_revenue_df():  return _get("_city_monthly_revenue_df", CITY_MONTHLY_REVENUE_PARQUET_PATH)
-def get_countries_by_channel_df():  return _get("_countries_by_channel_df", COUNTRIES_BY_CHANNEL_PARQUET_PATH)
-def get_return_buckets_df():        return _get("_return_buckets_df", RETURN_BUCKETS_PARQUET_PATH)
-def get_top_brands_df():            return _get("_top_brands_df", TOP_BRANDS_PARQUET_PATH)
-def get_top_categories_df():        return _get("_top_categories_df", TOP_CATEGORIES_PARQUET_PATH)
-def get_top_groups_df():            return _get("_top_groups_df", TOP_GROUPS_PARQUET_PATH)
-def get_top_repurchase_df():        return _get("_top_repurchase_df", TOP_REPURCHASE_PARQUET_PATH)
-def get_cooccurring_groups_df():    return _get("_cooccurring_groups_df", COOCURRING_GROUPS_PARQUET_PATH)
+def _read(name: str) -> pd.DataFrame:
+    return _read_cached(*_key(PATHS[name]))
+
+def get_customers_df():             return _read("customers")
+def get_transactions_df():          return _read("transactions")
+def get_articles_df():              return _read("articles")
+def get_orders_df():                return _read("orders")
+def get_order_items_df():           return _read("order_items")
+def get_customer_summary_df():      return _read("customer_summary")
+def get_country_summary_df():       return _read("country_summary")
+def get_city_summary_df():          return _read("city_summary")
+def get_city_monthly_revenue_df():  return _read("city_monthly_revenue")
+def get_countries_by_channel_df():  return _read("countries_by_channel")
+def get_return_buckets_df():        return _read("return_buckets")
+def get_top_brands_df():            return _read("top_brands")
+def get_top_categories_df():        return _read("top_categories")
+def get_top_groups_df():            return _read("top_groups")
+def get_top_repurchase_df():        return _read("top_repurchase")
+def get_cooccurring_groups_df():    return _read("cooccurring_groups")
+
+def clear_cache():
+    _read_cached.cache_clear()
