@@ -7,8 +7,9 @@ import { useRevenueByCountry } from "./hooks/useRevenueByCountry";
 import CustomersCountryBarChart from "./components/CustomersCountryBarChart";
 import RevenueCountryBarChart from "./components/RevenueCountryBarChart";
 import ReturningPatterns from "./components/ReturningPatterns";
-import CooccurrenceSection from "./components/CooccurrenceSection";
+import ComplementsSection from "./components/ComplementsSection";
 import { useReturningBuckets } from "./hooks/useReturningBuckets";
+import SemanticSimilaritySection from "./components/SemanticSimilaritySection";
 import { formatNumberWithSpace } from "./lib/number";
 import { TEXT, UI, HEADINGS, CARD } from "./theme";
 import { useState } from "react";
@@ -101,7 +102,10 @@ export default function Home() {
         )}
       </section>
       <section style={{ marginTop: 36 }}>
-        <CooccurrenceSection title="Frequently bought together (pairs, sorted by affinity strength)" />
+        <ComplementsSection/>
+      </section>
+      <section style={{ marginTop: 36 }}>
+        <SemanticSimilaritySection/>
       </section>
     </main>
   );

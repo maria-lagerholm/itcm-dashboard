@@ -1,10 +1,10 @@
-// hooks/useCooccurrence.js
+// hooks/useComplements.js
 "use client";
 
 import { useEffect, useState } from "react";
 import { apiBase } from "@/app/lib/apiBase";
 
-export default function useCooccurrence() {
+export default function useComplements() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,7 +18,7 @@ export default function useCooccurrence() {
       setError(null);
       try {
         const base = (apiBase() || "/api").replace(/\/+$/, "");
-        const url = `${base}/cooccurrence`; // no limit/offset
+        const url = `${base}/complements`; // no limit/offset
         const res = await fetch(url, { cache: "no-store", signal: ctrl.signal });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json(); // backend returns array of records
@@ -39,7 +39,7 @@ export default function useCooccurrence() {
 
         setRows(mapped);
       } catch (e) {
-        if (!cancelled) setError(e?.message || "Failed to load cooccurrence");
+        if (!cancelled) setError(e?.message || "Failed to load complements");
       } finally {
         if (!cancelled) setLoading(false);
       }

@@ -1,4 +1,4 @@
-// components/CooccurrenceTable.jsx
+// components/ComplementsTable.jsx
 import { COLORS, TEXT, TREEMAP } from "@/app/theme";
 
 const COLS = [
@@ -9,7 +9,7 @@ const COLS = [
   { key: "bId", width: 180 },
 ];
 
-export default function CooccurrenceTable({ rows = [] }) {
+export default function ComplementsTable({ rows = [] }) {
   return (
     <div
       style={{

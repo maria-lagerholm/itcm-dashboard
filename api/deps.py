@@ -21,7 +21,8 @@ PATHS = {
     "top_categories":            DATA / "top_categories_by_season.parquet",
     "top_groups":                DATA / "top_groupids_by_season.parquet",
     "top_repurchase":            DATA / "top_repurchase_groupids_by_country.parquet",
-    "cooccurring_groups":        DATA / "pair_cooccurrences.parquet",
+    "complements":        DATA / "pair_complements.parquet",
+    "semantic_similarity_recs":        DATA / "semantic_similarity_recs.parquet",
 }
 
 def _key(path: Path) -> tuple[str, float]:
@@ -50,7 +51,8 @@ def get_top_brands_df():            return _read("top_brands")
 def get_top_categories_df():        return _read("top_categories")
 def get_top_groups_df():            return _read("top_groups")
 def get_top_repurchase_df():        return _read("top_repurchase")
-def get_cooccurring_groups_df():    return _read("cooccurring_groups")
+def get_complements_df():    return _read("complements")
+def get_semantic_similarity_recs_df():    return _read("semantic_similarity_recs")
 
 def clear_cache():
     _read_cached.cache_clear()
