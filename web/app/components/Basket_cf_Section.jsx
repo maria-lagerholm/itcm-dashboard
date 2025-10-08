@@ -1,13 +1,13 @@
-// components/SemanticSimilaritySection.jsx
+// components/Basket_cf_Section.jsx
 "use client";
 
-import useSemanticSimilarityRecs from "../hooks/useSemanticSimilarityRecs";
+import useBasket_cf from "../hooks/useBasket_cf";
 import SemanticSimilarityTable from "./SemanticSimilarityTable";
 import { TEXT, LAYOUT, SECTION, HEADINGS, UI } from "@/app/theme";
 import { useState, useMemo } from "react";
 
-export default function SemanticSimilaritySection({ title = "Semantic Similarity (LLM recommendations)" }) {
-  const { rows } = useSemanticSimilarityRecs();
+export default function Basket_cf_Section({ title = "Popular with similar shoppers (based on cart items)" }) {
+  const { rows } = useBasket_cf();
   const [q, setQ] = useState("");
 
   const filtered = useMemo(() => {

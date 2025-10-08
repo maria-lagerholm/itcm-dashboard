@@ -1,16 +1,16 @@
-// hooks/useSemanticSimilarityRecs.js
+// hooks/useBasket_cf.js
 "use client";
 
 import { useEffect, useState } from "react";
 import { apiBase } from "@/app/lib/apiBase";
 
-export default function useSemanticSimilarityRecs() {
+export default function useBasket_cf() {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
     (async () => {
       const base = (apiBase() || "/api").replace(/\/+$/, "");
-      const url = `${base}/semantic_similarity_recs`;
+      const url = `${base}/basket_cf`;
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();

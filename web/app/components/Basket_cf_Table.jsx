@@ -1,4 +1,4 @@
-// components/SemanticSimilarityTable.jsx
+// components/Basket_cf_Table.jsx
 import { COLORS, TEXT, TREEMAP } from "@/app/theme";
 
 const COLS = [
@@ -27,7 +27,7 @@ const tdMono = {
   textOverflow: "ellipsis",
 };
 
-export default function SemanticSimilarityTable({ rows = [] }) {
+export default function Basket_cf_Table({ rows = [] }) {
   return (
     <div
       style={{

@@ -16,6 +16,7 @@ from routers.top_products import router as top_products_router
 from routers.top_repurchase_by_country import router as top_repurchase_by_country_router
 from routers.complements import router as complements_router
 from routers.semantic_similarity_recs import router as semantic_similarity_recs_router
+from routers.basket_cf import router as basket_cf_router
 
 app = FastAPI(root_path="/api")
 
@@ -41,6 +42,7 @@ app.include_router(top_categories_by_season_router)
 app.include_router(top_products_router)
 app.include_router(top_repurchase_by_country_router)
 app.include_router(semantic_similarity_recs_router)
+app.include_router(basket_cf_router)
 
 @app.get("/health")
 def health():

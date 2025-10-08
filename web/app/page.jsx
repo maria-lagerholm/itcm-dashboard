@@ -10,6 +10,7 @@ import ReturningPatterns from "./components/ReturningPatterns";
 import ComplementsSection from "./components/ComplementsSection";
 import { useReturningBuckets } from "./hooks/useReturningBuckets";
 import SemanticSimilaritySection from "./components/SemanticSimilaritySection";
+import Basket_cf_Section from "./components/Basket_cf_Section";
 import { formatNumberWithSpace } from "./lib/number";
 import { TEXT, UI, HEADINGS, CARD } from "./theme";
 import { useState } from "react";
@@ -40,17 +41,18 @@ export default function Home() {
 
   return (
     <main style={{ padding: 20, maxWidth: 1000, margin: "0 auto", fontFamily: TEXT.family, color: TEXT.color }}>
-      <header style={{ marginBottom: 28 }}>
+      <header>
         <h1 style={{ textAlign: "center" }}>
           Åshild Analytics (2024-06-01 - present)
         </h1>
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
+          <h3>
+            {mode === "customers" ? "Customers" : "Total Revenue by Country"}
+          </h3>
+          <ChartToolbar mode={mode} setMode={setMode} />
+        </div>
       </header>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 12 }}>
-        <h3>
-          {mode === "customers" ? "Customers" : "Total Revenue by Country"}
-        </h3>
-        <ChartToolbar mode={mode} setMode={setMode} />
-      </div>
       {mode === "revenue" && revenueError && (
         <div style={{ marginBottom: 12 }}>{revenueError}</div>
       )}
@@ -58,11 +60,7 @@ export default function Home() {
         <div style={{ marginBottom: 12 }}>{segmentsError}</div>
       )}
       {(showRevenueSpinner || showCustomersSpinner) ? (
-        <div style={{
-          width: "100%", height: 420, border: UI.surface.border ? `1px solid ${UI.surface.border}` : CARD.border,
-          borderRadius: CARD.radius, display: "grid", placeItems: "center",
-          background: UI.surface.subtle
-        }}>
+        <div>
           <Spinner label={mode === "revenue" ? "Loading revenue…" : "Loading segments…"} />
         </div>
       ) : (
@@ -77,15 +75,9 @@ export default function Home() {
           Time from first to second order
         </h3>
         {returningLoading ? (
-          <div style={{
-            width: "100%", height: 420, border: UI.surface.border ? `1px solid ${UI.surface.border}` : CARD.border,
-            borderRadius: CARD.radius, display: "grid", placeItems: "center",
-            background: UI.surface.subtle
-          }}>
+          <div>
             <Spinner label="Loading returning…" />
           </div>
-        ) : returningError ? (
-          <div style={{ marginBottom: 12 }}>Returning error: {returningError}</div>
         ) : (
           <>
             <div style={{ marginBottom: 8 }}>
@@ -95,17 +87,19 @@ export default function Home() {
               data={returningRows}
               categoryKey="country"
               valueKey="count"
-              height={520}
-              legend={false}
+              compact
             />
           </>
         )}
       </section>
-      <section style={{ marginTop: 36 }}>
+      <section style={{ marginTop: 60 }}>
         <ComplementsSection/>
       </section>
-      <section style={{ marginTop: 36 }}>
+      <section style={{ marginTop: 60 }}>
         <SemanticSimilaritySection/>
+      </section>
+      <section style={{ marginTop: 60 }}>
+        <Basket_cf_Section/>
       </section>
     </main>
   );
