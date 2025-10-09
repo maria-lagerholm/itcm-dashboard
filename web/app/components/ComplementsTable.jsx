@@ -1,5 +1,8 @@
 // components/ComplementsTable.jsx
+"use client";
+
 import { COLORS, TEXT, TREEMAP } from "@/app/theme";
+import PdpPreviewLink from "./ui/PdpPreviewLink";
 
 const COLS = [
   { key: "rank", width: 56 },
@@ -9,7 +12,7 @@ const COLS = [
   { key: "bId", width: 180 },
 ];
 
-export default function ComplementsTable({ rows = [] }) {
+function ComplementsTable({ rows = [] }) {
   return (
     <div
       style={{
@@ -39,9 +42,9 @@ export default function ComplementsTable({ rows = [] }) {
           <thead style={{ background: "#fff" }}>
             <tr>
               <th style={thSticky}>#</th>
-              <th style={thSticky}>Product A</th>
+              <th style={thSticky}>Product A Name</th>
               <th style={thSticky}>Product A ID</th>
-              <th style={thSticky}>Product B</th>
+              <th style={thSticky}>Product B Name</th>
               <th style={thSticky}>Product B ID</th>
             </tr>
           </thead>
@@ -51,10 +54,16 @@ export default function ComplementsTable({ rows = [] }) {
               rows.map(r => (
                 <tr key={`${r.aId}-${r.bId}-${r.rank}`}>
                   <td style={td}>{r.rank}</td>
-                  <td style={td}>{r.aName}</td>
-                  <td style={tdMonoNowrap} title={r.aId}>{r.aId}</td>
-                  <td style={td}>{r.bName}</td>
-                  <td style={tdMonoNowrap} title={r.bId}>{r.bId}</td>
+                  {/* Names: plain text */}
+                  <td style={td}>{r.aName || r.aId}</td>
+                  {/* IDs: clickable with preview */}
+                  <td style={tdMonoNowrap} title={r.aId}>
+                    <PdpPreviewLink id={r.aId}>{r.aId}</PdpPreviewLink>
+                  </td>
+                  <td style={td}>{r.bName || r.bId}</td>
+                  <td style={tdMonoNowrap} title={r.bId}>
+                    <PdpPreviewLink id={r.bId}>{r.bId}</PdpPreviewLink>
+                  </td>
                 </tr>
               ))
             ) : (
@@ -84,3 +93,5 @@ const tdMonoNowrap = {
   overflow: "hidden",
   textOverflow: "ellipsis",
 };
+
+export default ComplementsTable;

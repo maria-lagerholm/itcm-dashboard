@@ -1,5 +1,8 @@
 // components/SemanticSimilarityTable.jsx
+"use client";
+
 import { COLORS, TEXT, TREEMAP } from "@/app/theme";
+import PdpPreviewLink from "@/app/components/ui/PdpPreviewLink";
 
 const COLS = [
   { key: "productId", width: 180 },
@@ -52,6 +55,7 @@ export default function SemanticSimilarityTable({ rows = [] }) {
           <colgroup>
             {COLS.map(col => <col key={col.key} style={{ width: col.width }} />)}
           </colgroup>
+
           <thead>
             <tr>
               <th style={thSticky}>Product ID</th>
@@ -60,17 +64,21 @@ export default function SemanticSimilarityTable({ rows = [] }) {
               ))}
             </tr>
           </thead>
+
           <tbody>
             {rows.length > 0 && rows.map(row => (
               <tr key={row.productId}>
-                <td style={tdMono} title={row.productId}>{row.productId}</td>
+                <td style={tdMono} title={row.productId}>
+                  <PdpPreviewLink id={row.productId}>{row.productId}</PdpPreviewLink>
+                </td>
                 {(row.tops || []).map((v, i) => (
                   <td key={i} style={tdMono} title={v || ""}>
-                    {v || <span style={{ opacity: 0.5 }}>—</span>}
+                    {v ? <PdpPreviewLink id={v}>{v}</PdpPreviewLink> : <span style={{ opacity: 0.5 }}>—</span>}
                   </td>
                 ))}
               </tr>
             ))}
+
             {rows.length === 0 && (
               <tr>
                 <td colSpan={11} style={{ ...baseCell, textAlign: "center", color: COLORS.text }}>

@@ -1,5 +1,9 @@
+// app/country/Denmark/components/TopProductsTable.jsx
+"use client";
+
 import { fmtInt } from "../utils/formatters";
 import { COLORS, TEXT, TREEMAP } from "@/app/theme";
+import PdpPreviewLink from "@/app/components/ui/PdpPreviewLink";
 
 export default function TopProductsTable({ rows = [] }) {
   return (
@@ -7,13 +11,12 @@ export default function TopProductsTable({ rows = [] }) {
       style={{
         border: `1px solid ${TREEMAP.containerBorder}`,
         borderRadius: TREEMAP.containerRadius,
-        overflow: "hidden",              // keep container tidy
+        overflow: "hidden",
         fontFamily: TEXT.family,
         color: TEXT.color,
         fontSize: TEXT.size,
       }}
     >
-      {/* NEW: scroll area */}
       <div style={{ maxHeight: 360, overflowY: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: 0 }}>
           <thead style={{ background: "#fff" }}>
@@ -34,7 +37,9 @@ export default function TopProductsTable({ rows = [] }) {
                     <td style={td}>{r.rank}</td>
                     <td style={td}>{r.product}</td>
                     <td style={td}>{r.brand ?? "—"}</td>
-                    <td style={td}>{id}</td>
+                    <td style={tdMono} title={id}>
+                      {id ? <PdpPreviewLink id={id}>{id}</PdpPreviewLink> : "—"}
+                    </td>
                     <td style={tdRight}>{fmtInt(r.count)}</td>
                   </tr>
                 );
@@ -64,3 +69,10 @@ const thRightSticky = { ...thRight, ...stickyBase };
 
 const td = { ...cellBase, background: "#fff" };
 const tdRight = { ...td, textAlign: "right" };
+const tdMono = {
+  ...td,
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+};
