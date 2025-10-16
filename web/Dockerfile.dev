@@ -4,13 +4,16 @@ WORKDIR /app
 
 RUN apk add --no-cache bash libc6-compat
 
-ENV CI=true NODE_ENV=development
+# Keep CI in image; move the rest to compose
+ENV CI=1 NODE_ENV=development
 
+# Better layer caching
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --no-audit --no-fund
 
-COPY . .
+# Copy source as non-root
+COPY --chown=node:node . .
 
+USER node
 EXPOSE 3000
-
 CMD ["npm","run","dev"]

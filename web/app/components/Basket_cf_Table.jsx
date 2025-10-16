@@ -1,4 +1,3 @@
-// components/Basket_cf_Table.jsx
 "use client";
 
 import { COLORS, TEXT, TREEMAP } from "@/app/theme";
@@ -72,14 +71,11 @@ export default function Basket_cf_Table({ rows = [] }) {
             {rows.length > 0 &&
               rows.map((row) => (
                 <tr key={String(row.productId)}>
-                  {/* Product ID (clickable + preview) */}
                   <td style={tdMono} title={row.productId}>
                     <PdpPreviewLink id={row.productId}>
                       {row.productId}
                     </PdpPreviewLink>
                   </td>
-
-                  {/* Top N (clickable if present, else em dash) */}
                   {(row.tops || []).map((v, i) => (
                     <td key={i} style={tdMono} title={v || ""}>
                       {v ? (

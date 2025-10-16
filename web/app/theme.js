@@ -1,4 +1,3 @@
-// Theme constants for charts and UI components
 
 export const COLORS = {
   primary: "#aec7e8", secondary: "#ffbb78", tertiary: "#98df8a", quaternary: "#ff9896",
@@ -11,41 +10,32 @@ export const COLORS = {
   age: { female: "#f1788d", male: "#6388b4" },
 };
 
-// 10-color palette for charts
 export const PALETTE_10 = [
   COLORS.primary, COLORS.secondary, COLORS.tertiary, COLORS.quaternary, COLORS.quinary,
   COLORS.senary, COLORS.septenary, COLORS.octonary, COLORS.nonary, COLORS.denary,
 ];
 
-// Gender color mapping
 export const AGE_COLORS = { Female: COLORS.age.female, Male: COLORS.age.male };
 
-// Channel order for display
 export const CHANNEL_ORDER = ["web", "telephone", "email", "letter", "other"];
 
-// Channel color mapping
 export const CHANNEL_COLORS = {
   web: COLORS.web, telephone: COLORS.telephone, email: COLORS.email,
   letter: COLORS.letter, other: COLORS.other,
 };
 
-// Segment order for display
 export const SEGMENT_ORDER = ["New", "Returning", "Loyal"];
 
-// Segment labels for tooltips or legends
 export const SEGMENT_LABELS = {
   New: "New = 1 order", Returning: "Returning = 2–3 orders", Loyal: "Loyal = ≥4 orders",
 };
 
-// Chart style constants
 export const CHART = {
   barRadius: [8, 8, 0, 0],
   margin: { top: 8, right: 12, bottom: 32, left: 12 },
   tickFont: 14,
 };
 
-
-// Text style constants
 export const TEXT = {
   family: "Helvetica Neue",
   color: COLORS.text,
@@ -54,30 +44,23 @@ export const TEXT = {
   measureCoeff: 0.65,
 };
 
-// Treemap style constants
 export const TREEMAP = {
   ratio: 3.0, tileRadius: 6, tilePadding: 6, tileStroke: COLORS.grid, emptyBg: "#fafafa",
   containerBorder: COLORS.grid, containerRadius: 8, containerPadding: 12,
   tooltipShadow: "0 6px 18px rgba(0,0,0,0.06)",
 };
 
-// Layout spacing constants
 export const LAYOUT = { sectionMarginY: 32, sectionGap: 12 };
 
-// Flow layout for page and section
 export const FLOW = {
-  // Page layout: spacing between sections
   page: { display: "grid", rowGap: LAYOUT.sectionMarginY },
-  // Section layout: spacing between header and content
   section: { display: "grid", rowGap: LAYOUT.sectionGap },
 };
 
-// Card style constants
 export const CARD = {
   border: `1px solid ${COLORS.grid}`, radius: 8, padding: 12, bg: "#fff",
 };
 
-// Button style constants
 export const BUTTON = {
   base: {
     padding: "6px 10px", borderRadius: 8, border: `1px solid ${COLORS.grid}`,
@@ -86,7 +69,6 @@ export const BUTTON = {
   activeBg: "#f1f5f9",
 };
 
-// Tooltip style constants
 export const TOOLTIP = {
   base: {
     background: "#fff", border: `1px solid ${COLORS.grid}`, borderRadius: 8,
@@ -95,7 +77,6 @@ export const TOOLTIP = {
   cursorFill: "rgba(0,0,0,0.035)", cursorRadius: 6,
 };
 
-// General UI style constants
 export const UI = {
   text: { primary: "#0b0b0c", sizeSm: 14, sizeMd: 16, weightSemibold: 600 },
   surface: { bg: "#ffffff", border: "#eaeaea", radius: 10, padding: 12, subtle: "#f1f5f9" },
@@ -104,14 +85,12 @@ export const UI = {
   grid: { strokeDasharray: "3 3", cursorFill: "rgba(0,0,0,0.035)" },
 };
 
-// Heading style constants
 export const HEADINGS = {
   h1: { margin: 0, fontSize: 24, fontWeight: 700 },
   h2: { margin: 0, fontSize: 18, fontWeight: 600 },
   h3: { margin: 0, fontSize: 16, fontWeight: 600 },
 };
 
-// Section layout helpers
 export const SECTION = {
   container: (LAYOUT) => ({
     display: "grid", gap: LAYOUT.sectionGap, marginTop: LAYOUT.sectionMarginY,

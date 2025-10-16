@@ -18,8 +18,8 @@ services:
       dockerfile: Dockerfile.dev
     container_name: item-dashboard-web
     environment:
-      NEXT_PUBLIC_API_BASE_URL: "/api"         # browser calls go via Caddy
-      INTERNAL_API_BASE_URL: "http://api:8000" # server-side calls in container
+      NEXT_PUBLIC_API_BASE_URL: "/api"
+      INTERNAL_API_BASE_URL: "http://api:8000"
       NODE_ENV: development
       NEXT_TELEMETRY_DISABLED: "1"
       CHOKIDAR_USEPOLLING: "true"
@@ -38,8 +38,26 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./caddy:/etc/caddy:ro   # directory with Caddyfile inside
+      - ./caddy:/etc/caddy:ro
     depends_on:
       - web
       - api
     restart: unless-stopped
+  sync:
+    image: alpine:3.20
+    container_name: itcm-sync
+    environment:
+      TZ: Europe/Stockholm
+    volumes:
+      - ../itcm_recommendation_engine/data/processed:/src:ro
+      - ./data:/dst
+      - ./logs:/var/log              # <-- persist logs on host
+    command: >
+      sh -lc "
+        echo Europe/Stockholm > /etc/TZ &&
+        echo '00 22 * * * /bin/sh -lc \"echo [\\$(date -Is)] START >> /var/log/seed-cron.log; mkdir -p /dst && cp -a /src/. /dst/ >> /var/log/seed-cron.log 2>&1; RC=$?; echo [\\$(date -Is)] DONE rc=\\$RC >> /var/log/seed-cron.log\"' > /etc/crontabs/root &&
+        crond -f -l 8
+      "
+    restart: unless-stopped
+
+
