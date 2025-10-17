@@ -55,7 +55,7 @@ services:
     command: >
       sh -lc "
         echo Europe/Stockholm > /etc/TZ &&
-        echo '00 22 * * * /bin/sh -lc \"echo [\\$(date -Is)] START >> /var/log/seed-cron.log; mkdir -p /dst && cp -a /src/. /dst/ >> /var/log/seed-cron.log 2>&1; RC=$?; echo [\\$(date -Is)] DONE rc=\\$RC >> /var/log/seed-cron.log\"' > /etc/crontabs/root &&
+        echo '00 23 * * * /bin/sh -lc \"echo [\\$(date -Is)] START >> /var/log/seed-cron.log; mkdir -p /dst && cp -a /src/. /dst/ >> /var/log/seed-cron.log 2>&1; RC=$?; echo [\\$(date -Is)] DONE rc=\\$RC >> /var/log/seed-cron.log\"' > /etc/crontabs/root &&
         crond -f -l 8
       "
     restart: unless-stopped
