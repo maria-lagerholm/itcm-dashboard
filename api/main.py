@@ -9,6 +9,7 @@ from routers.cities_by_revenue import router as cities_by_revenue_router
 from routers.customers_age_gender import router as customers_age_gender_router
 from routers.sales_month import router as sales_month_router
 from routers.countries_by_channel import router as countries_by_channel_router
+from routers.countries_by_channel_by_month import router as countries_by_channel_by_month_router
 from routers.returning import router as returning_router
 from routers.top_brands_by_country import router as top_brands_by_country_router
 from routers.top_categories_by_season import router as top_categories_by_season_router
@@ -36,6 +37,7 @@ app.include_router(cities_by_revenue_router)
 app.include_router(customers_age_gender_router)
 app.include_router(sales_month_router)
 app.include_router(countries_by_channel_router)
+app.include_router(countries_by_channel_by_month_router)
 app.include_router(returning_router)
 app.include_router(top_brands_by_country_router)
 app.include_router(top_categories_by_season_router)

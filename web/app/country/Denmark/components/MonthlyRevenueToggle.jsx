@@ -6,16 +6,19 @@ import MonthlySalesChart from "./MonthlySalesChart";
 import MonthlyForecastChart from "./MonthlyForecastChart";
 import { BUTTON, TEXT, HEADINGS, LAYOUT, SECTION } from "../../../theme";
 
-// Month helpers
-const monthIndex = (ym) => {
+const monthIndex = ym => {
   const [y, m] = ym.split("-").map(Number);
-  return y * 12 + (m - 1); // 0-based month index
+  return y * 12 + m - 1;
 };
+
 const monthsBetweenInclusive = (startYM, endYM) =>
   monthIndex(endYM) - monthIndex(startYM) + 1;
 
 const labelFromRange = (startYM, endYM) => {
-  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const months = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
+  ];
   const [sy, sm] = startYM.split("-").map(Number);
   const [ey, em] = endYM.split("-").map(Number);
   return `${months[sm - 1]} ${sy} – ${months[em - 1]} ${ey}`;
@@ -26,19 +29,20 @@ export default function MonthlyRevenueToggle({
   histStartYM = "2024-06",
   histEndYM = "2025-05",
   forecastStartYM = "2025-06",
-  forecastEndYM = "2026-05",
+  forecastEndYM = "2026-05"
 }) {
   const [view, setView] = useState("hist");
 
-  const histLabel = useMemo(() => labelFromRange(histStartYM, histEndYM), [histStartYM, histEndYM]);
-  const forecastLabel = useMemo(() => labelFromRange(forecastStartYM, forecastEndYM), [forecastStartYM, forecastEndYM]);
+  const histLabel = useMemo(
+    () => labelFromRange(histStartYM, histEndYM),
+    [histStartYM, histEndYM]
+  );
+  const forecastLabel = useMemo(
+    () => labelFromRange(forecastStartYM, forecastEndYM),
+    [forecastStartYM, forecastEndYM]
+  );
 
-  // Convert forecast range → props for MonthlyForecastChart
-  // Our MonthlyForecastChart expects:
-  //   - anchorEndYM: month immediately BEFORE the first month of the range
-  //   - months: number of months in the range (inclusive)
   const anchorEndYM = useMemo(() => {
-    // month before forecastStartYM
     const [y, m] = forecastStartYM.split("-").map(Number);
     const d = new Date(Date.UTC(y, m - 1, 1));
     d.setUTCMonth(d.getUTCMonth() - 1);
@@ -52,11 +56,11 @@ export default function MonthlyRevenueToggle({
     [forecastStartYM, forecastEndYM]
   );
 
-  const btnStyle = (active) => ({
+  const btnStyle = active => ({
     ...BUTTON.base,
     background: active ? BUTTON.activeBg : BUTTON.base.background,
     fontFamily: TEXT.family,
-    color: TEXT.color,
+    color: TEXT.color
   });
 
   return (
@@ -66,15 +70,20 @@ export default function MonthlyRevenueToggle({
           {country} · Monthly revenue (KSEK)
         </h3>
         <div style={{ display: "flex", gap: 8 }}>
-          <button style={btnStyle(view === "hist")} onClick={() => setView("hist")}>
+          <button
+            style={btnStyle(view === "hist")}
+            onClick={() => setView("hist")}
+          >
             {histLabel}
           </button>
-          <button style={btnStyle(view === "forecast")} onClick={() => setView("forecast")}>
+          <button
+            style={btnStyle(view === "forecast")}
+            onClick={() => setView("forecast")}
+          >
             {forecastLabel}
           </button>
         </div>
       </div>
-
       {view === "hist" ? (
         <MonthlySalesChart
           country={country}

@@ -16,6 +16,7 @@ PATHS = {
     "city_summary":              DATA / "city_summary.parquet",
     "city_monthly_revenue":      DATA / "city_monthly_revenue.parquet",
     "countries_by_channel":      DATA / "country_customers_by_channel.parquet",
+    "countries_by_channel_by_month":      DATA / "country_customers_by_channel_by_month.parquet",
     "return_buckets":            DATA / "return_buckets_overall.parquet",
     "top_brands":                DATA / "top_brands_by_country.parquet",
     "top_categories":            DATA / "top_categories_by_season.parquet",
@@ -47,6 +48,7 @@ def get_country_summary_df():       return _read("country_summary")
 def get_city_summary_df():          return _read("city_summary")
 def get_city_monthly_revenue_df():  return _read("city_monthly_revenue")
 def get_countries_by_channel_df():  return _read("countries_by_channel")
+def get_countries_by_channel_by_month_df():  return _read("countries_by_channel_by_month")
 def get_return_buckets_df():        return _read("return_buckets")
 def get_top_brands_df():            return _read("top_brands")
 def get_top_categories_df():        return _read("top_categories")

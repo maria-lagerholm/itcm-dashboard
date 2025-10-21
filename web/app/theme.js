@@ -100,3 +100,4 @@ export const SECTION = {
     gap: 8, fontFamily: TEXT.family, color: TEXT.color,
   }),
 };
+

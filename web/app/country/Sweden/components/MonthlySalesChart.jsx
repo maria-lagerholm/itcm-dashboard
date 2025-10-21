@@ -10,21 +10,15 @@ export default function MonthlySalesChart({
   country = COUNTRY,
   startYM = "2024-06",
   endYM = "2025-05",
-  title = `${country} · Monthly revenue (KSEK)`,
   subtitle,          
-  showTitle = true,
 }) {
   const { rows, loading, error, subtitle: defaultSub } = useMonthlySales({ country, startYM, endYM });
   const sub = subtitle ?? defaultSub;
 
   return (
     <section style={SECTION.container(LAYOUT)}>
-      <div style={SECTION.header(TEXT)}>
-        {showTitle && (
-          <div style={{ fontFamily: TEXT.family, color: TEXT.color, fontSize: TEXT.size }}>
-            {title}
-          </div>
-        )}
+      <div>
+       
         <div style={{ fontFamily: TEXT.family, color: TEXT.color, opacity: 0.7, fontSize: TEXT.size }}>
           {sub}
         </div>
@@ -58,8 +52,8 @@ export default function MonthlySalesChart({
                   boxShadow: TOOLTIP.base.boxShadow,
                   fontSize: TEXT.size,
                 }}
-                itemStyle={{ color: TEXT.color }}    // <-- match City tooltip text
-                labelStyle={{ color: TEXT.color }}   // <-- label/title color
+                itemStyle={{ color: TEXT.color }}
+                labelStyle={{ color: TEXT.color }}
                 formatter={(v) => [`${fmtInt(v)} KSEK`, "Revenue"]}
               />
 

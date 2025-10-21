@@ -98,7 +98,7 @@ export default function Home() {
       <section style={{ marginTop: 60 }}>
         <SemanticSimilaritySection/>
       </section>
-      <section style={{ marginTop: 60 }}>
+      <section style={{ marginTop: 60, marginBottom: 200 }}>
         <Basket_cf_Section/>
       </section>
     </main>
