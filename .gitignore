@@ -3,5 +3,8 @@ __pycache__/
 .venv/
 .env
 .env.*
-data/
 .DS_Store
+*.parquet
+*.json
+*.csv
+
