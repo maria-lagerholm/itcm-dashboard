@@ -11,6 +11,7 @@ import ComplementsSection from "./components/ComplementsSection";
 import { useReturningBuckets } from "./hooks/useReturningBuckets";
 import SemanticSimilaritySection from "./components/SemanticSimilaritySection";
 import Basket_cf_Section from "./components/Basket_cf_Section";
+import TopSameBrandSection from "./components/TopSameBrandSection";
 import { formatNumberWithSpace } from "./lib/number";
 import { TEXT, UI, HEADINGS, CARD } from "./theme";
 import { useState } from "react";
@@ -97,6 +98,9 @@ export default function Home() {
       </section>
       <section style={{ marginTop: 60 }}>
         <SemanticSimilaritySection/>
+      </section>
+      <section style={{ marginTop: 60 }}>
+        <TopSameBrandSection/>
       </section>
       <section style={{ marginTop: 60, marginBottom: 200 }}>
         <Basket_cf_Section/>

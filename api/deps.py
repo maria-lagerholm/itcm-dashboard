@@ -25,6 +25,7 @@ PATHS = {
     "complements":        DATA / "pair_complements.parquet",
     "semantic_similarity_recs":        DATA / "semantic_similarity_recs.parquet",
     "basket_cf":        DATA / "basket_completion.parquet",
+    "top_same_brand":        DATA / "top_same_brand.parquet",
 }
 
 def _key(path: Path) -> tuple[str, float]:
@@ -57,6 +58,7 @@ def get_top_repurchase_df():        return _read("top_repurchase")
 def get_complements_df():    return _read("complements")
 def get_semantic_similarity_recs_df():    return _read("semantic_similarity_recs")
 def get_basket_cf_df():    return _read("basket_cf")
+def get_top_same_brand_df():    return _read("top_same_brand")
 
 def clear_cache():
     _read_cached.cache_clear()
