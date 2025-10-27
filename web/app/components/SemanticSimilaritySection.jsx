@@ -6,7 +6,7 @@ import SemanticSimilarityTable from "./SemanticSimilarityTable";
 import { TEXT, LAYOUT, SECTION, HEADINGS, UI } from "@/app/theme";
 import { useState, useMemo } from "react";
 
-export default function SemanticSimilaritySection({ title = "Semantic Similarity (AI recommendations)" }) {
+export default function SemanticSimilaritySection({ title = "Similarity based on Semantics (AI Neural Network recommendations)" }) {
   const { rows } = useSemanticSimilarityRecs();
   const [q, setQ] = useState("");
 

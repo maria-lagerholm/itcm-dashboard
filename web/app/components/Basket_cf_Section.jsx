@@ -6,7 +6,7 @@ import SemanticSimilarityTable from "./SemanticSimilarityTable";
 import { TEXT, LAYOUT, SECTION, HEADINGS, UI } from "@/app/theme";
 import { useState, useMemo } from "react";
 
-export default function Basket_cf_Section({ title = "People who bought A also bought B (collaborative filtering)" }) {
+export default function Basket_cf_Section({ title = "People who bought this product A also bought product B (AI - machine learning assisted collaborative filtering)" }) {
   const { rows } = useBasket_cf();
   const [q, setQ] = useState("");
 

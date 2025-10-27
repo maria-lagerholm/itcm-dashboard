@@ -6,7 +6,7 @@ import SemanticSimilarityTable from "./SemanticSimilarityTable";
 import { TEXT, LAYOUT, SECTION, HEADINGS, UI } from "@/app/theme";
 import { useState, useMemo } from "react";
 
-export default function TopSameBrandSection({ title = "Popular products with same brand and category" }) {
+export default function TopSameBrandSection({ title = "Popular products within the same brand and category" }) {
   const { rows } = useTopSameBrands();
   const [q, setQ] = useState("");
 
