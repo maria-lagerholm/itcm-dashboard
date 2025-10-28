@@ -2,28 +2,23 @@
 "use client";
 
 import useComplements from "../hooks/useComplements";
-import ComplementsTable from "./ComplementsTable";
+import SemanticSimilarityTable from "./SemanticSimilarityTable";
 import { TEXT, LAYOUT, SECTION, HEADINGS, UI } from "@/app/theme";
 import { useState, useMemo } from "react";
 
-export default function ComplementsSection({
-  title = "Frequently Bought Together (complements, sorted by affinity strength)",
-}) {
-  const { rows, loading, error } = useComplements();
+export default function ComplementsSection({ title = "Frequently Bought Together" }) {
+  const { rows } = useComplements();
   const [q, setQ] = useState("");
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
     if (!s) return rows;
-    return rows.filter(r =>
-      String(r.aId || "").toLowerCase().includes(s) ||
-      String(r.bId || "").toLowerCase().includes(s)
-    );
+    return rows.filter(r => String(r.productId).toLowerCase().includes(s));
   }, [rows, q]);
 
   return (
     <section style={{ ...SECTION.container(LAYOUT), position: "relative", isolation: "isolate" }}>
-      <div style={{ ...SECTION.header(TEXT), display: "flex", gap: 12, alignItems: "center" }}>
+      <div style={SECTION.header(TEXT)}>
         <h3 style={HEADINGS.h3}>{title}</h3>
         <input
           value={q}
@@ -40,16 +35,7 @@ export default function ComplementsSection({
           aria-label="Filter by Product ID"
         />
       </div>
-
-      {loading ? (
-        <div style={{ fontFamily: TEXT.family, color: UI.text.primary }}>Loading…</div>
-      ) : error ? (
-        <div style={{ fontFamily: TEXT.family, color: "#dc2626", fontWeight: 600 }}>
-          {String(error)}
-        </div>
-      ) : (
-        <ComplementsTable rows={filtered} />
-      )}
+      <SemanticSimilarityTable rows={filtered} />
     </section>
   );
 }

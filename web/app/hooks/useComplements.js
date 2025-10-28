@@ -6,50 +6,32 @@ import { apiBase } from "@/app/lib/apiBase";
 
 export default function useComplements() {
   const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    let cancelled = false;
-    const ctrl = new AbortController();
-
     (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const base = (apiBase() || "/api").replace(/\/+$/, "");
-        const url = `${base}/complements`; // no limit/offset
-        const res = await fetch(url, { cache: "no-store", signal: ctrl.signal });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json(); // backend returns array of records
-
-        if (cancelled) return;
-
-        // Normalize for the table component
-        const mapped = (data || []).map((r) => ({
-          rank: Number(r["Rank by Affinity Strength"]) || 0,
-          aId: String(r["Product A ID"] ?? ""),
-          aName: r["Product A"] ?? "",
-          bId: String(r["Product B ID"] ?? ""),
-          bName: r["Product B"] ?? "",
+      const base = (apiBase() || "/api").replace(/\/+$/, "");
+      const url = `${base}/complements`;
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        let mapped = (data || []).map((r) => ({
+          productId: String(r["Product ID"] ?? ""),
+          tops: Array.from({ length: 10 }, (_, i) => {
+            const v = r[`Top ${i + 1}`];
+            return v == null ? "" : String(v);
+          }),
         }));
 
-        // If backend isn't sorted, sort by rank ascending
-        mapped.sort((x, y) => (x.rank || 0) - (y.rank || 0));
-
+        mapped.sort((a, b) => {
+          const na = Number(a.productId);
+          const nb = Number(b.productId);
+          if (Number.isFinite(na) && Number.isFinite(nb)) return na - nb;
+          return a.productId.localeCompare(b.productId);
+        });
         setRows(mapped);
-      } catch (e) {
-        if (!cancelled) setError(e?.message || "Failed to load complements");
-      } finally {
-        if (!cancelled) setLoading(false);
       }
     })();
-
-    return () => {
-      cancelled = true;
-      ctrl.abort();
-    };
   }, []);
 
-  return { rows, loading, error };
+  return { rows };
 }
