@@ -12,6 +12,7 @@ import { useReturningBuckets } from "./hooks/useReturningBuckets";
 import SemanticSimilaritySection from "./components/SemanticSimilaritySection";
 import Basket_cf_Section from "./components/Basket_cf_Section";
 import TopSameBrandSection from "./components/TopSameBrandSection";
+import Hybrid_Section from "./components/Hybrid_Section";
 import { formatNumberWithSpace } from "./lib/number";
 import { TEXT, UI, HEADINGS, CARD } from "./theme";
 import { useState } from "react";
@@ -93,6 +94,10 @@ export default function Home() {
           </>
         )}
       </section>
+      <section style={{ marginTop: 60 }}>
+        <Hybrid_Section/>
+      </section>
+      <hr style={{ margin: "60px 0 0 0", border: 0, height: 10, background: "lightgrey", borderRadius: 8 }} />
       <section style={{ marginTop: 60 }}>
         <ComplementsSection/>
       </section>

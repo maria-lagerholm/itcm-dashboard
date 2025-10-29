@@ -30,7 +30,7 @@ const tdMono = {
   textOverflow: "ellipsis",
 };
 
-export default function ComplementsTable({ rows = [] }) {
+export default function Table({ rows = [] }) {
   return (
     <div
       style={{

@@ -19,6 +19,7 @@ from routers.complements import router as complements_router
 from routers.semantic_similarity_recs import router as semantic_similarity_recs_router
 from routers.basket_cf import router as basket_cf_router
 from routers.top_same_brand import router as top_same_brand_router
+from routers.hybrid import router as hybrid_router
 
 app = FastAPI(root_path="/api")
 
@@ -47,6 +48,7 @@ app.include_router(top_repurchase_by_country_router)
 app.include_router(semantic_similarity_recs_router)
 app.include_router(basket_cf_router)
 app.include_router(top_same_brand_router)
+app.include_router(hybrid_router)
 
 @app.get("/health")
 def health():

@@ -2,7 +2,7 @@
 "use client";
 
 import useComplements from "../hooks/useComplements";
-import SemanticSimilarityTable from "./SemanticSimilarityTable";
+import Table from "./Table";
 import { TEXT, LAYOUT, SECTION, HEADINGS, UI } from "@/app/theme";
 import { useState, useMemo } from "react";
 
@@ -35,7 +35,7 @@ export default function ComplementsSection({ title = "Frequently Bought Together
           aria-label="Filter by Product ID"
         />
       </div>
-      <SemanticSimilarityTable rows={filtered} />
+      <Table rows={filtered} />
     </section>
   );
 }

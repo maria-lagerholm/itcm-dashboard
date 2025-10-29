@@ -1,13 +1,13 @@
-// components/TopSameBrandSection.jsx
+// components/Hybrid_Section.jsx
 "use client";
 
-import useTopSameBrands from "../hooks/useTopSameBrands";
+import useHybrid from "../hooks/useHybrid";
 import Table from "./Table";
 import { TEXT, LAYOUT, SECTION, HEADINGS, UI } from "@/app/theme";
 import { useState, useMemo } from "react";
 
-export default function TopSameBrandSection({ title = "Popular products within the same brand and category" }) {
-  const { rows } = useTopSameBrands();
+export default function Hybrid_Section({ title = "You may also be interested in these products (combined recommendations from multiple models bellow)" }) {
+  const { rows } = useHybrid();
   const [q, setQ] = useState("");
 
   const filtered = useMemo(() => {

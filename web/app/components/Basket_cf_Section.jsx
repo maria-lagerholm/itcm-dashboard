@@ -2,7 +2,7 @@
 "use client";
 
 import useBasket_cf from "../hooks/useBasket_cf";
-import SemanticSimilarityTable from "./SemanticSimilarityTable";
+import Table from "./Table";
 import { TEXT, LAYOUT, SECTION, HEADINGS, UI } from "@/app/theme";
 import { useState, useMemo } from "react";
 
@@ -35,7 +35,7 @@ export default function Basket_cf_Section({ title = "People who bought this prod
           aria-label="Filter by Product ID"
         />
       </div>
-      <SemanticSimilarityTable rows={filtered} />
+      <Table rows={filtered} />
     </section>
   );
 }
