@@ -9,8 +9,10 @@ services:
       - ./data:/app/data:ro
     environment:
       ENV: dev
+      VESPA_ENDPOINT: http://vespa:8080   # <— talk to vespa by service name
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     restart: unless-stopped
+    networks: [mknet]
 
   web:
     build:
@@ -24,6 +26,7 @@ services:
       NEXT_TELEMETRY_DISABLED: "1"
       CHOKIDAR_USEPOLLING: "true"
       PORT: "3000"
+      VESPA_ENDPOINT: http://vespa:8080
     command: sh -c "npm run dev"
     volumes:
       - ./web:/app
@@ -31,6 +34,7 @@ services:
     depends_on:
       - api
     restart: unless-stopped
+    networks: [mknet]
 
   proxy:
     image: caddy:2
@@ -43,6 +47,8 @@ services:
       - web
       - api
     restart: unless-stopped
+    networks: [mknet]
+
   sync:
     image: alpine:3.20
     container_name: itcm-sync
@@ -51,7 +57,7 @@ services:
     volumes:
       - ../itcm_recommendation_engine/data/processed:/src:ro
       - ./data:/dst
-      - ./logs:/var/log              # <-- persist logs on host
+      - ./logs:/var/log
     command: >
       sh -lc "
         echo Europe/Stockholm > /etc/TZ &&
@@ -59,5 +65,8 @@ services:
         crond -f -l 8
       "
     restart: unless-stopped
+    networks: [mknet]
 
-
+networks:
+  mknet:
+    external: true

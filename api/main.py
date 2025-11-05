@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
 
+from routers import search as search_router
 from routers import countries as countries_router
 from routers import country_top_cities as country_top_cities_router
 from routers.countries_by_revenue import router as country_revenue_router
@@ -31,6 +32,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(search_router.router)
 app.include_router(countries_router.router)
 app.include_router(complements_router)
 app.include_router(country_top_cities_router.router)
@@ -48,7 +50,7 @@ app.include_router(top_repurchase_by_country_router)
 app.include_router(semantic_similarity_recs_router)
 app.include_router(basket_cf_router)
 app.include_router(top_same_brand_router)
-app.include_router(hybrid_router)
+#app.include_router(hybrid_router)
 
 @app.get("/health")
 def health():
